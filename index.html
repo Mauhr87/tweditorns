@@ -919,23 +919,98 @@ body[data-mode="play"] .del-space { display: none !important; }
 
 /* ---- Print ---- */
 @media print {
-  body { background: #fff; }
-  #toolbar { display: none !important; }
-  #score-panel { display: none !important; }
-  .playback-controls { display: none !important; }
-  .mode-control { display: none !important; }
-  #import-status { display: none !important; }
-  #app { padding: 4px; }
-  #sheet { border: none; padding: 0; }
-  .del-note { display: none !important; }
-  .tab-space:hover { background: transparent; }
-  .tab-space-x { display: none !important; }
-  .tab-note:hover { background: transparent; }
-  .hole:hover { transform: none; }
-  .octave-btn:not(.on) { visibility: hidden; }
-  .tab-line { page-break-inside: avoid; }
-  .tab-line:last-child { border-bottom: 1.5px solid #aaa; }
+  @page { size: letter; margin: 12mm 10mm; }
+
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  /* Hide everything by default */
+  #toolbar,
+  #score-panel,
+  .playback-controls,
+  .mode-control,
+  #import-status,
+  .panel-overlay,
+  #library-panel,
+  #settings-panel,
+  .side-panel,
+  .top-actions { display: none !important; }
+
+  /* Hide edit controls within the sheet */
+  .del-note,
+  .insert-measure,
+  .add-measure,
+  .remove-linebreak-btn { display: none !important; }
+
+  /* Show measure numbers */
+  .measure-number { display: block !important; }
+
+  /* Title */
+  #_print_title {
+    display: block !important;
+    font-family: Georgia, serif;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #333;
+    color: #111;
+  }
+
+  /* Sheet layout */
+  #app {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  #topbar {
+    display: block !important;
+    margin: 0 0 10px 0 !important;
+  }
+  #song-title {
+    display: block !important;
+    width: 100% !important;
+    border-bottom: 2px solid #333 !important;
+    text-align: center !important;
+    font-size: 18px !important;
+    padding: 0 0 6px 0 !important;
+  }
+  #sheet {
+    border: none !important;
+    display: block !important;
+    flex: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Prevent cuts inside rows and measures */
+  .tab-line {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  .tab-measure {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .line-separator { display: none !important; }
+
+  /* Color accuracy */
   .note-name { color: #1d4ed8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hole.filled { background: #111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .tab-space-x { opacity: 0.5; }
+  .octave-btn:not(.on) { visibility: hidden; }
 }
 </style>
 </head>
@@ -1096,7 +1171,7 @@ body[data-mode="play"] .del-space { display: none !important; }
             <div class="setting-name">Imprimir</div>
             <div class="setting-desc">Abre la vista de impresión de la tablatura actual.</div>
           </div>
-          <button class="btn primary" onclick="window.print()">⎙ Imprimir</button>
+          <button class="btn primary" onclick="exportPDF()">⎙ Imprimir</button>
         </div>
       </div>
     </div>
@@ -2490,7 +2565,13 @@ function exportPDF() {
     const html = buildPrintHTML();
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+    const win = window.open(url, '_blank');
+    if (!win) {
+      URL.revokeObjectURL(url);
+      setImportStatus('Permite pop-ups en el navegador para imprimir.', 'error');
+      return;
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
   }, 200);
 }
 
@@ -2509,31 +2590,111 @@ function noteToSVG(slot) {
   svg+='</svg>'; return svg;
 }
 function buildPrintHTML() {
-  const title=document.getElementById('song-title').value||'Tin Whistle Tab';
-  let rowsHTML='';
-  // Group measures into rows using lineBreakBefore
-  const printRows = [[]];
-  measures.forEach((m, i) => {
-    if (i > 0 && m.lineBreakBefore) printRows.push([]);
-    printRows[printRows.length - 1].push(m);
+  const title = document.getElementById('song-title').value || 'Tin Whistle Tab';
+  const keyStr = `Whistle en ${whistleKey}`;
+
+  const rows = [[]];
+  measures.forEach((m, mi) => {
+    if (mi > 0 && m.lineBreakBefore) rows.push([]);
+    rows[rows.length - 1].push({ m, mi });
   });
-  printRows.forEach(row => {
-    let rowContent='';
-    row.forEach(m=>{
-      m.slots.forEach(slot=>{
-        if (slot.type==='space') rowContent+=`<span style="display:inline-block;width:18px;"></span>`;
-        else rowContent+=`<span style="display:inline-block;vertical-align:bottom;margin-right:4px;">${noteToSVG(slot)}</span>`;
-      });
-    });
-    rowsHTML+=`<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px;padding-bottom:12px;margin-bottom:12px;border-bottom:1.5px solid #999;min-height:70px;">${rowContent}</div>`;
-  });
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>${title}</title>
-  <style>body{font-family:Georgia,serif;margin:28px 32px;background:#fff;color:#111;}
-  h1{text-align:center;font-size:20px;margin-bottom:4px;border-bottom:2px solid #333;padding-bottom:8px;}
-  .sub{text-align:center;font-size:11px;color:#888;margin-bottom:18px;}
-  @media print{body{margin:14px 20px;}div{page-break-inside:avoid;}}</style></head>
-  <body><h1>${title}</h1><div class="sub">Whistle en ${whistleKey}</div>${rowsHTML}</body></html>`;
+
+  // Build print rows. Manual line breaks are visual rows, not page breaks.
+  const measuresHTML = rows.map(row => {
+    const rowHTML = row.map(({ m, mi }) => {
+      const notesHTML = m.slots.map(slot => {
+      if (slot.type === 'space') {
+        return `<div class="slot rest-slot"></div>`;
+      }
+      const noteName = getNoteName(slot.holes || [], slot.octave);
+      const holes = HOLE_ORDER.map(h =>
+        `<div class="hole ${(slot.holes||[])[h] ? 'filled' : ''}"></div>`
+      ).join('');
+      return `<div class="slot">
+        <div class="note-name">${noteName || '·'}</div>
+        <div class="holes">${holes}</div>
+        ${slot.octave ? '<div class="oct">+</div>' : '<div class="oct-placeholder"></div>'}
+      </div>`;
+      }).join('');
+
+      return `<div class="measure">
+      <div class="measure-num">${mi + 1}</div>
+      <div class="notes-row">${notesHTML}</div>
+    </div>`;
+    }).join('');
+    return `<div class="print-row">${rowHTML}</div>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>${xmlEscape(title)}</title>
+<style>
+  @page { size: letter; margin: 12mm 10mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; min-height: 100%; }
+  body { font-family: Georgia, serif; background: #fff; color: #111; }
+
+  h1 { font-size: 18px; text-align: center; border-bottom: 2px solid #333;
+       padding-bottom: 6px; margin-bottom: 4px; }
+  .sub { font-size: 10px; color: #888; text-align: center; margin-bottom: 10px; }
+
+  .sheet { display: block; width: 100%; }
+  .print-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  /* Each measure: atomic block, never split */
+  .measure {
+    display: inline-flex;
+    flex-direction: column;
+    border-right: 1.5px solid #ccc;
+    padding: 4px 4px 4px 6px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    vertical-align: top;
+  }
+  .measure-num {
+    font-size: 9px; color: #888; font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .notes-row { display: flex; gap: 3px; align-items: flex-start; }
+
+  /* Individual slot */
+  .slot { display: flex; flex-direction: column; align-items: center; width: 18px; }
+  .rest-slot { width: 14px; }
+  .note-name { font-size: 8px; font-weight: bold; color: #1d4ed8;
+               text-align: center; height: 12px; line-height: 12px; }
+  .holes { display: flex; flex-direction: column; gap: 2px; }
+  .hole {
+    width: 9px; height: 9px; border-radius: 50%;
+    border: 1px solid #111; background: #fff;
+  }
+  .hole.filled { background: #111; }
+  .oct { font-size: 8px; text-align: center; height: 10px; line-height: 10px; }
+  .oct-placeholder { height: 10px; }
+
+  @media print {
+    h1, .sub { break-after: avoid; page-break-after: avoid; }
+    .measure { page-break-inside: avoid; break-inside: avoid; }
+    .note-name { color: #1d4ed8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hole.filled { background: #111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body onload="window.print()">
+  <h1>${xmlEscape(title)}</h1>
+  <div class="sub">${xmlEscape(keyStr)}</div>
+  <div class="sheet">${measuresHTML}</div>
+</body>
+</html>`;
 }
+
 
 // ── Render ─────────────────────────────────────────────────────────────
 function renderAll() {
