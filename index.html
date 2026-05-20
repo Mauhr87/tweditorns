@@ -97,6 +97,12 @@ body {
   font-family: 'Georgia', serif;
 }
 .btn:hover { background: #333; color: #fff; }
+#bpInstrumentBtn { background: #fff; color: #166534; border-color: #166534; }
+#bpInstrumentBtn:hover { background: #e9f9ed; color: #166534; }
+#bpInstrumentBtn.active { background: #fff; color: #166534; border-color: #166534; }
+#bpInstrumentBtn.active:hover { background: #e9f9ed; color: #166534; }
+#bpInstrumentBtn:not(.active) { background: #fff; color: #9ca3af; border-color: #9ca3af; }
+#bpInstrumentBtn:not(.active):hover { background: #f3f4f6; color: #6b7280; }
 .btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -538,13 +544,18 @@ body[data-mode="edit"] #playback-bar {
   background: #fff;
   border: 1px solid #ddd;
   padding: 16px 16px 8px 16px;
-  min-height: 100px;
   border-radius: 4px;
   flex: 1 1 auto;
-  overflow-y: auto;
   min-height: 0;
+  /* Horizontal scroll */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
-#sheet::-webkit-scrollbar { width: 8px; }
+#sheet::-webkit-scrollbar { height: 8px; }
 #sheet::-webkit-scrollbar-track { background: #f3f0ea; }
 #sheet::-webkit-scrollbar-thumb { background: #aaa; border-radius: 4px; }
 
@@ -607,24 +618,26 @@ body[data-mode="edit"] #playback-bar {
 
 .tab-line {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: flex-end;
   gap: 6px;
   min-height: 88px;
   padding-bottom: 10px;
   margin-bottom: 0;
   position: relative;
+  flex-shrink: 0;
 }
 .tab-line:last-child { border-bottom: none; margin-bottom: 0; }
 
 .line-separator {
   position: relative;
   border: none;
-  border-top: 1.5px solid #aaa;
-  margin: 10px 0;
-  /* Expand hover area above and below the 1.5px line */
-  padding: 8px 0;
+  border-left: 2px solid #aaa;
+  margin: 10px 8px;
+  padding: 0 6px;
+  align-self: stretch;
   cursor: default;
+  flex-shrink: 0;
 }
 .remove-linebreak-btn {
   position: absolute;
@@ -780,6 +793,17 @@ body[data-mode="play"] .tab-measure.add-measure {
   flex-direction: column;
   gap: 3px;
 }
+/* Recorder 8-hole separator */
+.hole-sep {
+  width: 100%;
+  height: 3px;
+  background: transparent;
+}
+.hole.thumb {
+  border-radius: 3px;
+  width: 14px;
+  height: 10px;
+}
 
 .hole {
   width: 14px;
@@ -907,7 +931,48 @@ body[data-mode="play"] .del-space { display: none !important; }
   text-align: center;
 }
 
-/* ── Toast notifications ── */
+/* ── Backing track panel ── */
+.backing-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 10px; border-radius: 7px;
+  border: 1.5px solid #aaa; background: #fff; color: #555;
+  font-size: 12px; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.backing-btn:hover { border-color: #7c3aed; color: #7c3aed; }
+.backing-btn.active { border-color: #059669; color: #059669; background: rgba(5,150,105,0.08); }
+.backing-btn.danger { border-color: #dc2626; color: #dc2626; }
+.backing-btn.danger:hover { background: rgba(220,38,38,0.08); }
+.backing-panel {
+  display: none; position: fixed; bottom: 70px; right: 12px;
+  z-index: 500; width: 300px;
+  background: #fff; border: 1px solid #d1d5db; border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18); flex-direction: column; overflow: hidden;
+}
+.backing-panel.open { display: flex; }
+.backing-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px 9px; border-bottom: 1px solid #e5e7eb;
+  font-size: 13px; font-weight: 700; color: #111;
+}
+.backing-panel-close {
+  background: none; border: none; color: #aaa; font-size: 16px;
+  cursor: pointer; padding: 0 2px; line-height: 1;
+}
+.backing-panel-body { padding: 13px; display: flex; flex-direction: column; gap: 11px; }
+.bp-row { display: flex; align-items: center; gap: 8px; }
+.bp-label { font-size: 11px; color: #888; font-weight: 600; min-width: 68px; }
+.bp-file-name { font-size: 11px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.bp-range { flex: 1; accent-color: #7c3aed; min-width: 0; }
+.bp-range-val { font-size: 11px; color: #888; min-width: 32px; text-align: right; }
+.bp-offset-input {
+  width: 64px; padding: 3px 6px; border-radius: 6px;
+  border: 1px solid #d1d5db; background: #fafafa;
+  color: #111; font-size: 12px; text-align: right; font-family: inherit;
+}
+.bp-divider { height: 1px; background: #e5e7eb; margin: 0 -13px; }
+
+/* ── Toolbar backing icon ── */
+.btn.backing-icon { font-size: 15px; padding: 5px 9px; }
 .toast {
   position: fixed;
   bottom: 28px;
@@ -1005,6 +1070,8 @@ body[data-mode="play"] .del-space { display: none !important; }
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
   }
 
   /* Prevent cuts inside rows and measures */
@@ -1013,6 +1080,10 @@ body[data-mode="play"] .del-space { display: none !important; }
     break-inside: auto !important;
     display: flex !important;
     flex-wrap: wrap !important;
+    flex-shrink: 1 !important;
+  }
+  .line-separator {
+    display: none !important;
   }
   .tab-measure {
     page-break-inside: avoid !important;
@@ -1050,8 +1121,15 @@ body[data-mode="play"] .del-space { display: none !important; }
         <button type="button" id="mode-play" onclick="setMode('play')">Play</button>
       </div>
     </div>
-    <div class="toolbar-group key-selector">
-      <label for="key-select">Whistle</label>
+    <div class="toolbar-group key-selector" id="instrument-group">
+      <label for="instrument-select">Instrumento</label>
+      <select id="instrument-select" onchange="changeInstrument(this.value)">
+        <option value="whistle" selected>Tin Whistle</option>
+        <option value="recorder">Flauta Dulce</option>
+      </select>
+    </div>
+    <div class="toolbar-group key-selector" id="whistle-key-group">
+      <label for="key-select">Tono</label>
       <select id="key-select" onchange="changeKey(this.value)">
         <option value="C">C</option>
         <option value="C#">C#</option>
@@ -1065,6 +1143,13 @@ body[data-mode="play"] .del-space { display: none !important; }
         <option value="A">A</option>
         <option value="Bb">Bb</option>
         <option value="B">B</option>
+      </select>
+    </div>
+    <div class="toolbar-group key-selector" id="recorder-style-group" style="display:none">
+      <label for="recorder-style-select">Sistema</label>
+      <select id="recorder-style-select" onchange="changeRecorderStyle(this.value)">
+        <option value="baroque" selected>Barroco</option>
+        <option value="german">Alemán</option>
       </select>
     </div>
     <div class="toolbar-group edit-controls">
@@ -1175,6 +1260,21 @@ body[data-mode="play"] .del-space { display: none !important; }
         <div class="settings-section-title">Salida</div>
         <div class="setting-row">
           <div>
+            <div class="setting-name">Descargar JSON</div>
+            <div class="setting-desc">Exporta toda la configuración de la tablatura como archivo JSON.</div>
+          </div>
+          <button class="btn" onclick="exportTabJson()">⇩ JSON</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-name">Importar JSON</div>
+            <div class="setting-desc">Carga una tablatura desde un archivo JSON exportado anteriormente.</div>
+          </div>
+          <button class="btn import" onclick="document.getElementById('importJsonInput').click()">⇪ Importar</button>
+          <input id="importJsonInput" type="file" accept=".json,application/json" hidden onchange="importTabJson(event)">
+        </div>
+        <div class="setting-row">
+          <div>
             <div class="setting-name">Exportar MusicXML</div>
             <div class="setting-desc">Genera un archivo compatible con MuseScore y otros editores.</div>
           </div>
@@ -1187,6 +1287,43 @@ body[data-mode="play"] .del-space { display: none !important; }
           </div>
           <button class="btn primary" onclick="exportPDF()">⎙ Imprimir</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backing track panel -->
+  <div class="backing-panel" id="backingPanel">
+    <div class="backing-panel-header">
+      <span>🎵 Backing track</span>
+      <button class="backing-panel-close" onclick="toggleBackingPanel()">✕</button>
+    </div>
+    <div class="backing-panel-body">
+      <div class="bp-row">
+        <button class="backing-btn" onclick="document.getElementById('backingFileInput').click()">📂 Cargar audio…</button>
+        <input id="backingFileInput" type="file" accept="audio/*" hidden onchange="loadBackingTrack(event)">
+        <span class="bp-file-name" id="backingFileName">Sin archivo</span>
+      </div>
+      <div class="bp-row" id="bpActiveRow" style="display:none">
+        <button class="backing-btn active" id="bpEnableBtn" onclick="toggleBackingEnabled()">🎵 Backing: ON</button>
+      </div>
+      <div class="bp-divider" id="bpDivider1" style="display:none"></div>
+      <div class="bp-row" id="bpVolRow" style="display:none">
+        <span class="bp-label">Volumen</span>
+        <input type="range" class="bp-range" id="backingVol" min="0" max="1" step="0.01" value="0.8"
+          oninput="setBackingVolume(this.value)">
+        <span class="bp-range-val" id="backingVolLabel">80%</span>
+      </div>
+      <div class="bp-row" id="bpOffsetRow" style="display:none">
+        <span class="bp-label">Offset (s)</span>
+        <input type="number" class="bp-offset-input" id="backingOffset" value="0.00" min="0" step="0.01"
+          title="Segundos de intro en el backing antes de que entre la flauta"
+          oninput="setBackingOffset(this.value)">
+        <button class="backing-btn" id="bpMarkBtn" onclick="markBackingEntry()" title="Marcar el segundo actual como punto de entrada">🎯 Marcar</button>
+      </div>
+      <div class="bp-row" id="bpPreviewRow" style="display:none">
+        <span class="bp-label">Preview</span>
+        <button class="backing-btn" id="bpPreviewBtn" onclick="toggleBackingPreview()">▶ Escuchar</button>
+        <button class="backing-btn danger" onclick="clearBackingTrack()">✕ Quitar</button>
       </div>
     </div>
   </div>
@@ -1212,15 +1349,17 @@ body[data-mode="play"] .del-space { display: none !important; }
       <span id="playback-range-total">/ 1</span>
     </div>
     <div class="playback-section center">
-      <button class="btn stop" onclick="stopPlayback()" title="Detener">■</button>
-      <button class="btn play" onclick="playSelectedRange()" title="Reproducir">▶ Play</button>
+      <button class="btn stop" onclick="stopPlayback()" title="Detener y resetear">■</button>
+      <button class="btn play" id="play-btn" onclick="togglePlayPause()" title="Reproducir / Pausar">▶ Play</button>
       <label class="toggle-switch" title="Repetir los compases seleccionados">
         <input type="checkbox" id="loop-toggle" onchange="save()">
         <span class="toggle-slider" aria-hidden="true"></span>
         <span>Loop</span>
       </label>
+      <button class="btn" id="bpInstrumentBtn" onclick="toggleInstrumentEnabled()" title="Silenciar / activar flauta">🎶</button>
     </div>
     <div class="playback-section right">
+      <button class="btn" id="backingIconBtn" onclick="toggleBackingPanel()" title="Backing track">🎵</button>
       <label class="playback-label" for="play-bpm">BPM</label>
       <input type="number" id="play-bpm" min="30" max="240" value="100">
     </div>
@@ -1237,6 +1376,8 @@ body[data-mode="play"] .del-space { display: none !important; }
 // ── State ──────────────────────────────────────────────────────────
 let measures = [];          // [{id, beats, slots:[{type,holes,octave,duration,eventId}]}]
 let whistleKey = 'D';
+let currentInstrument = 'whistle'; // 'whistle' | 'recorder'
+let recorderStyle = 'baroque';     // 'baroque' | 'german'
 let playbackEvents = [];
 let measureStartBeats = [0];
 let playbackMaxMeasure = 1;
@@ -1273,12 +1414,155 @@ let _cachedPerRow = 0;
 function getMeasuresPerRow() { return 9999; } // unused — rows driven by lineBreakBefore
 function invalidateRowCache() { _cachedPerRow = 0; }
 const HOLE_ORDER = [0,1,2,3,4,5];
+function getHoleCount()       { return currentInstrument === 'recorder' ? 8 : 6; }
+function emptyHoles()         { return currentInstrument==='recorder' ? Array(8).fill(true) : Array(6).fill(false); }
+function getFingeringOffsets(octave) {
+  if (currentInstrument === 'recorder') {
+    if (octave) return recorderStyle === 'german' ? RECORDER_GERMAN_FINGERING_OFFSETS_OCT2 : RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2;
+    return recorderStyle === 'german' ? RECORDER_GERMAN_FINGERING_OFFSETS : RECORDER_BAROQUE_FINGERING_OFFSETS;
+  }
+  return FINGERING_OFFSETS;
+}
+function getOffsetFingerings(octave) {
+  if (currentInstrument === 'recorder') {
+    if (octave) return recorderStyle === 'german' ? RECORDER_GERMAN_OFFSET_FINGERINGS_OCT2 : RECORDER_BAROQUE_OFFSET_FINGERINGS_OCT2;
+    return recorderStyle === 'german' ? RECORDER_GERMAN_OFFSET_FINGERINGS : RECORDER_BAROQUE_OFFSET_FINGERINGS;
+  }
+  return OFFSET_FINGERINGS;
+}
 
 // ── Music tables (unchanged) ────────────────────────────────────────
 const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NOTES_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
 const KEY_ROOT = {'C':0,'C#':1,'D':2,'Eb':3,'E':4,'F':5,'F#':6,'G':7,'Ab':8,'A':9,'Bb':10,'B':11};
 const FLAT_KEYS = new Set(['F','Bb','Eb','Ab']);
+// ── Recorder (Flauta Dulce Soprano en Do) fingering tables ──────────
+// Holes: [T, H1, H2, H3, H4, H5, H6, H7] — de arriba a abajo, 1=tapado 0=abierto
+// Fuente: imagen de referencia (digitación correcta confirmada por el usuario)
+//
+// ── 1ª OCTAVA ───────────────────────────────────────────────────────
+const RECORDER_BAROQUE_FINGERING_OFFSETS = {
+  '11111111': 0,  // DO  (distinguido de DO# por h7r)
+  '11111110': 2,  // RE  (distinguido de RE# por h6r)
+  '11111100': 4,  // MI
+  '11111000': 5,  // FA
+  '11110110': 6,  // FA#
+  '11110000': 7,  // SOL
+  '11101100': 8,  // SOL#
+  '11100000': 9,  // LA
+  '11011000': 10, // SIb
+  '11000000': 11, // SI
+};
+// Tabla canónica offset → fingering para DISPLAY (con h6r/h7r)
+// Formato: [holes_string, h6r, h7r]
+const REC_FING_OCT1 = {
+  0:  ['11111111', true,  true ],  // DO
+  1:  ['11111111', true,  false],  // DO# (H7-der abierto)
+  2:  ['11111110', true,  false],  // RE  (H7 todo ab, H6 ambos tap)
+  3:  ['11111110', false, false],  // RE# (H6-der ab, H7 todo ab)
+  4:  ['11111100', false, false],  // MI
+  5:  ['11111000', false, false],  // FA
+  6:  ['11110110', true,  false],  // FA# (H6 ambos tap, H7 ab)
+  7:  ['11110000', false, false],  // SOL
+  8:  ['11101100', false, false],  // SOL#
+  9:  ['11100000', false, false],  // LA
+  10: ['11011000', false, false],  // SIb
+  11: ['11000000', false, false],  // SI
+};
+// Formato: [holes_string, h6r, h7r, thumbState]
+const REC_FING_OCT2 = {
+  0:  ['10100000', false, false, 'closed'],  // DO2
+  1:  ['01100000', false, false, 'open'  ],  // DO#2
+  2:  ['00100000', false, false, 'open'  ],  // RE2
+  3:  ['01111110', false, false, 'half'  ],  // RE#2
+  4:  ['01111100', false, false, 'half'  ],  // MI2
+  5:  ['01111000', false, false, 'half'  ],  // FA2
+  6:  ['01110010', true,  false, 'half'  ],  // FA#2
+  7:  ['01110000', false, false, 'half'  ],  // SOL2
+  8:  ['01110111', true,  true,  'half'  ],  // SOL#2
+  9:  ['01100000', false, false, 'half'  ],  // LA2
+  10: ['01100110', true,  false, 'half'  ],  // SIb2
+  11: ['01101100', false, false, 'half'  ],  // SI2
+};
+const RECORDER_BAROQUE_OFFSET_FINGERINGS = Object.fromEntries(
+  Object.entries(REC_FING_OCT1).map(([k,[s]])=>[k,s])
+);
+const RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2 = {};
+const RECORDER_BAROQUE_OFFSET_FINGERINGS_OCT2 = Object.fromEntries(
+  Object.entries(REC_FING_OCT2).map(([k,[s]])=>[k,s])
+);
+for (const [off, [fing]] of Object.entries(REC_FING_OCT2)) {
+  RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2[fing] = parseInt(off);
+}
+// Sistema alemán — mismas digitaciones
+const RECORDER_GERMAN_FINGERING_OFFSETS = { ...RECORDER_BAROQUE_FINGERING_OFFSETS };
+const RECORDER_GERMAN_OFFSET_FINGERINGS = { ...RECORDER_BAROQUE_OFFSET_FINGERINGS };
+const RECORDER_GERMAN_OFFSET_FINGERINGS_OCT2 = { ...RECORDER_BAROQUE_OFFSET_FINGERINGS_OCT2 };
+const RECORDER_GERMAN_FINGERING_OFFSETS_OCT2 = { ...RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2 };
+
+
+// Migrar/reparar slots de flauta dulce usando transposedMidi como fuente de verdad
+function migrateRecorderSlots(measuresList) {
+  if (currentInstrument !== 'recorder') return;
+  measuresList.forEach(m => m.slots.forEach(slot => {
+    if (slot.type !== 'note') return;
+    // Derivar degree desde transposedMidi (fuente de verdad absoluta, sin ambigüedad)
+    if (slot.transposedMidi != null && Number.isFinite(slot.transposedMidi)) {
+      const rootMidi = 60;
+      let pm = slot.transposedMidi;
+      while (pm < rootMidi) pm += 12;
+      while (pm >= rootMidi + 24) pm -= 12;
+      slot.octave = pm >= rootMidi + 12;
+      slot.degree = ((pm - rootMidi) % 12 + 12) % 12;
+    }
+    // Ahora aplicar la digitación correcta desde la tabla usando degree
+    if (slot.degree != null) {
+      const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
+      const entry = table[slot.degree];
+      if (entry) {
+        const [s, h6r, h7r, thumbOverride] = entry;
+        slot.holes = s.split('').map(v=>v==='1');
+        slot.h6r = h6r;
+        slot.h7r = h7r;
+        slot.thumbState = thumbOverride || (slot.holes[0] ? 'closed' : 'open');
+        if (slot.thumbState === 'half') slot.holes[0] = false;
+      }
+    }
+  }));
+}
+// Aplica digitación completa a un slot (holes + thumbState + h6r + h7r)
+function applyRecorderFingering(slot, fingering, isOct2) {
+  const table = isOct2 ? REC_FING_OCT2 : REC_FING_OCT1;
+  // Buscar por offset si slot.degree existe, sino por string
+  let entry = null;
+  if (slot.degree != null) {
+    entry = table[slot.degree];
+  }
+  if (!entry) {
+    // Buscar la entrada que coincida con el fingering string
+    entry = Object.values(table).find(e => e[0] === fingering);
+  }
+  if (entry) {
+    const [s, h6r, h7r, thumbOverride] = entry;
+    slot.holes = s.split('').map(v=>v==='1');
+    slot.h6r = h6r;
+    slot.h7r = h7r;
+    slot.thumbState = thumbOverride || (isOct2 ? 'half' : (slot.holes[0] ? 'closed' : 'open'));
+    slot.octave = isOct2;
+    if (slot.thumbState === 'half') slot.holes[0] = false;
+  } else {
+    // Fallback: inicializar desde el string
+    slot.holes = fingering.split('').map(v=>v==='1');
+    slot.h6r = slot.holes[6];
+    slot.h7r = slot.holes[7];
+    slot.thumbState = isOct2 ? 'half' : (slot.holes[0] ? 'closed' : 'open');
+    slot.octave = isOct2;
+    if (slot.thumbState === 'half') slot.holes[0] = false;
+  }
+  return slot;
+}
+
+
 const FINGERING_OFFSETS = {
   '111111':0,'111101':1,'111110':2,'111010':3,'111100':4,'111000':5,
   '110000':7,'100000':9,'000000':11,'110111':6,'101111':8,'011000':10,'011111':0
@@ -1293,10 +1577,26 @@ const NOTE_NAMES_FLAT_OR_SHARP = {
   'E#':5,'F':5,'F#':6,'Gb':6,'G':7,'G#':8,'Ab':8,'A':9,'A#':10,'Bb':10,'B':11,'Cb':11
 };
 
-// ── Note name helpers (unchanged) ───────────────────────────────────
-function getNoteName(holes, octave) {
+// ── Note name helpers ────────────────────────────────────────────────
+// slot opcional: usa slot.degree como fuente de verdad para resolver colisiones DO#/RE y RE#/MI
+function getNoteName(holes, octave, slot) {
   const key = holes.map(h => h?'1':'0').join('');
-  const offset = FINGERING_OFFSETS[key];
+  if (currentInstrument === 'recorder') {
+    let offset;
+    if (slot && slot.degree != null) {
+      offset = slot.degree;
+    } else {
+      const foMap = getFingeringOffsets(octave);
+      offset = foMap[key];
+      if (offset === undefined) offset = getFingeringOffsets(false)[key];
+    }
+    if (offset === undefined) return '';
+    const semiIdx = ((offset) % 12 + 12) % 12;
+    const name = NOTES_SHARP[semiIdx];
+    return octave ? name + "'" : name;
+  }
+  const foMap = getFingeringOffsets(octave);
+  let offset = foMap[key];
   if (offset === undefined) return '';
   const rootIdx = KEY_ROOT[whistleKey] ?? 2;
   const semiIdx = ((rootIdx + offset) % 12 + 12) % 12;
@@ -1304,15 +1604,39 @@ function getNoteName(holes, octave) {
   const name = useFlats ? NOTES_FLAT[semiIdx] : NOTES_SHARP[semiIdx];
   return octave ? name + "'" : name;
 }
+
 function holesFromFingering(key) { return key.split('').map(v => v==='1'); }
+
 function midiFromTabSlot(slot) {
   const key = slot.holes?.map(h=>h?'1':'0').join('');
-  const offset = FINGERING_OFFSETS[key];
+  const foMap = getFingeringOffsets(slot.octave);
+  let offset = foMap[key];
+  // Fallback a 1ª octava si no encuentra en el mapa de 2ª octava
+  if (offset === undefined && currentInstrument === 'recorder' && slot.octave) {
+    offset = getFingeringOffsets(false)[key];
+  }
   if (offset === undefined) return null;
+  if (currentInstrument === 'recorder') {
+    return 60 + offset + (slot.octave ? 12 : 0);
+  }
   const rootPc = KEY_ROOT[whistleKey] ?? 2;
   return 60 + rootPc + offset + (slot.octave ? 12 : 0);
 }
 function noteFromMidiForWhistle(midi) {
+  if (currentInstrument === 'recorder') {
+    const rootMidi = 60; // C4
+    let pm = midi;
+    while (pm < rootMidi) pm += 12;
+    while (pm >= rootMidi + 24) pm -= 12;
+    const isOct2 = pm >= rootMidi + 12;
+    const offset = ((pm - rootMidi) % 12 + 12) % 12;
+    const ofMap = getOffsetFingerings(isOct2);
+    const fingering = ofMap[offset];
+    if (!fingering) return null;
+    const slot = { holes: [], octave: false, thumbState: 'open', h6r: false, h7r: false };
+    applyRecorderFingering(slot, fingering, isOct2);
+    return { ...slot, transposedMidi: pm };
+  }
   const rootPc = KEY_ROOT[whistleKey] ?? 2;
   const rootMidi = 60 + rootPc;
   let pm = midi;
@@ -1476,7 +1800,7 @@ function makeRest(duration) {
 
 // Create a note slot (blank fingering)
 function makeBlankNote(duration) {
-  return { type:'note', holes:[false,false,false,false,false,false], octave:false,
+  return { type:'note', holes:emptyHoles(), octave:false, thumbState:'closed', h6r:true, h7r:true, degree:0,
            duration: Math.max(0.125,duration), eventId: makeSlotId() };
 }
 
@@ -1514,6 +1838,31 @@ function derivePlayback() {
       if (slot.type === 'note') {
         const midi = midiFromTabSlot(slot);
         slot.transposedMidi = midi;
+        // Mantener degree actualizado (offset relativo 0-11 para retranscripción correcta)
+        // Mantener degree: si ya existe (fue calculado por toggleHole/migrateRecorderSlots),
+        // conservarlo. Solo recalcular si es null/undefined.
+        if (currentInstrument === 'recorder' && (slot.degree === null || slot.degree === undefined)) {
+          const degreeKey = slot.holes?.map(h=>h?'1':'0').join('');
+          if (degreeKey) {
+            const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
+            let foundDeg = null;
+            for (const [off, entry] of Object.entries(table)) {
+              const [s, th6r, th7r] = entry;
+              if (s === degreeKey && th6r === slot.h6r && th7r === slot.h7r) {
+                foundDeg = parseInt(off); break;
+              }
+            }
+            if (foundDeg === null) {
+              for (const [off, entry] of Object.entries(table)) {
+                if (entry[0] === degreeKey) { foundDeg = parseInt(off); break; }
+              }
+            }
+            slot.degree = foundDeg;
+          }
+        } else if (currentInstrument !== 'recorder') {
+          const degreeKey = slot.holes?.map(h=>h?'1':'0').join('');
+          slot.degree = degreeKey ? (getFingeringOffsets(slot.octave)[degreeKey] ?? null) : null;
+        }
         if (Number.isFinite(midi)) {
           rebuiltEvents.push({ id: slot.eventId, measure: measureNum,
             startBeat: absoluteBeat + beatInMeasure,
@@ -1642,14 +1991,53 @@ function applyDurationToSelected() {
 }
 
 // Toggle a hole on a note slot
-function toggleHole(mIdx, sIdx, h) {
+function toggleHole(mIdx, sIdx, h, subHole) {
   const m = measures[mIdx];
   const slot = m?.slots[sIdx];
   if (!slot || slot.type !== 'note') return;
   if (currentMode === 'play') { previewTabSlot(slot); return; }
   pushUndoSnapshot();
   ensureEditableRecord();
-  slot.holes[h] = !slot.holes[h];
+  if (currentInstrument === 'recorder') {
+    if (h === 0) {
+      // Pulgar: ciclar open → half → closed → open
+      const states = ['open','half','closed'];
+      const cur = slot.thumbState || 'open';
+      slot.thumbState = states[(states.indexOf(cur)+1) % 3];
+      slot.holes[0] = slot.thumbState === 'closed';
+      slot.octave = slot.thumbState === 'half';
+    } else if ((h === 6 || h === 7) && subHole === 'right') {
+      if (h === 6) slot.h6r = !slot.h6r;
+      else         slot.h7r = !slot.h7r;
+    } else if (h === 6 || h === 7) {
+      slot.holes[h] = !slot.holes[h];
+      if (h === 6) slot.h6r = slot.holes[6];
+      else         slot.h7r = slot.holes[7];
+    } else {
+      slot.holes[h] = !slot.holes[h];
+    }
+    // Recalcular degree buscando en la tabla canónica REC_FING_OCT1/OCT2
+    const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
+    const baseKey = slot.holes.map(x=>x?'1':'0').join('');
+    let foundDeg = null;
+    // Buscar coincidencia exacta primero (baseKey + h6r + h7r)
+    for (const [off, entry] of Object.entries(table)) {
+      const [s, th6r, th7r] = entry;
+      if (s === baseKey && th6r === slot.h6r && th7r === slot.h7r) {
+        foundDeg = parseInt(off); break;
+      }
+    }
+    // Si no hay coincidencia exacta, buscar solo por baseKey
+    // (el usuario puede estar construyendo una digitación parcial)
+    if (foundDeg === null) {
+      for (const [off, entry] of Object.entries(table)) {
+        if (entry[0] === baseKey) { foundDeg = parseInt(off); break; }
+      }
+    }
+    slot.degree = foundDeg;
+  } else {
+    slot.holes[h] = !slot.holes[h];
+  }
   afterMutation();
 }
 
@@ -1771,6 +2159,49 @@ function clearAll() {
   afterMutation();
 }
 
+function syncInstrumentUI() {
+  const isRec = currentInstrument === 'recorder';
+  const wkGroup = document.getElementById('whistle-key-group');
+  const rsGroup = document.getElementById('recorder-style-group');
+  if (wkGroup) wkGroup.style.display = isRec ? 'none' : '';
+  if (rsGroup) rsGroup.style.display = isRec ? '' : 'none';
+}
+// Re-derive hole fingerings from stored MIDI values when switching instruments.
+// Uses degree (relative scale offset 0-11) + octave for consistent cross-instrument transposition.
+function retranscribeForCurrentInstrument() {
+  measures.forEach(m => {
+    m.slots.forEach(slot => {
+      if (slot.type !== 'note') return;
+      // Use degree (relative offset) if available — ensures DO→DO across instruments
+      if (slot.degree != null && Number.isFinite(slot.degree)) {
+        const fingering = getOffsetFingerings(slot.octave)[slot.degree];
+        if (fingering) { applyRecorderFingering(slot, fingering, slot.octave); return; }
+      }
+      // Fallback: use transposedMidi (absolute pitch)
+      const midi = slot.transposedMidi;
+      if (midi != null && Number.isFinite(midi)) {
+        const info = noteFromMidiForWhistle(midi);
+        if (info) { slot.holes = info.holes; slot.octave = info.octave; return; }
+      }
+      slot.holes = emptyHoles();
+    });
+  });
+}
+function changeInstrument(inst) {
+  stopPlayback();
+  pushUndoSnapshot();
+  if (hasTabContent()) ensureEditableRecord();
+  currentInstrument = inst;
+  syncInstrumentUI();
+  retranscribeForCurrentInstrument();
+  afterMutation();
+}
+function changeRecorderStyle(style) {
+  stopPlayback();
+  recorderStyle = style;
+  renderAll();
+  scheduleScoreRender();
+}
 function changeKey(k) {
   stopPlayback();
   pushUndoSnapshot();
@@ -1815,6 +2246,7 @@ function restoreHistorySnapshot(snap) {
   stopPlayback();
   historySuspended = true;
   measures = cloneData(snap.measures || [makeEmptyMeasure()]);
+  migrateRecorderSlots(measures);
   whistleKey = snap.whistleKey || 'D';
   playbackEvents = cloneData(snap.playbackEvents || []);
   measureStartBeats = cloneData(snap.measureStartBeats || [0]);
@@ -1861,6 +2293,8 @@ function getSongSnapshot() {
     title: document.getElementById('song-title').value,
     measures: cloneData(measures),
     whistleKey,
+    currentInstrument,
+    recorderStyle,
     playbackEvents: cloneData(playbackEvents),
     measureStartBeats: cloneData(measureStartBeats),
     playbackMaxMeasure,
@@ -1871,6 +2305,13 @@ function getSongSnapshot() {
     timeBeatType: document.getElementById('time-beat-type')?.value || 4,
     nextEventId,
     currentMode,
+    // Backing track settings (blob stored separately in IndexedDB)
+    backingBlobName,
+    backingVolume,
+    backingOffsetSec,
+    backingOriginalBpm,
+    backingEnabled,
+    instrumentEnabled,
     // v4 marker
     modelVersion: 4
   };
@@ -1881,12 +2322,18 @@ function applySongSnapshot(snap) {
   if (snap.modelVersion === 4 && Array.isArray(snap.measures)) {
     measures = cloneData(snap.measures);
   } else {
-    // Legacy v1-v3: rebuild measures from lines
     measures = legacyLinesToMeasures(snap);
   }
   whistleKey = snap.whistleKey || 'D';
+  currentInstrument = snap.currentInstrument || 'whistle';
+  recorderStyle = snap.recorderStyle || 'baroque';
   currentMode = snap.currentMode==='play'?'play':'edit';
   document.getElementById('key-select').value = whistleKey;
+  const instSel = document.getElementById('instrument-select');
+  if (instSel) instSel.value = currentInstrument;
+  const styleSel = document.getElementById('recorder-style-select');
+  if (styleSel) styleSel.value = recorderStyle;
+  syncInstrumentUI();
   updateModeUI();
   document.getElementById('play-bpm').value = snap.playbackBpm || 100;
   document.getElementById('loop-toggle').checked = Boolean(snap.loopEnabled);
@@ -1898,6 +2345,14 @@ function applySongSnapshot(snap) {
   undoStack = []; redoStack = [];
   updateUndoRedoButtons();
   selectedRef = null;
+  // Restore backing settings (blob loaded separately)
+  backingVolume      = Number(snap.backingVolume ?? 0.8);
+  backingOffsetSec   = Number(snap.backingOffsetSec ?? 0);
+  backingOriginalBpm = Number(snap.backingOriginalBpm ?? 0);
+  backingEnabled     = snap.backingEnabled !== false;
+  instrumentEnabled  = snap.instrumentEnabled !== false;
+  if (backingGain) backingGain.gain.value = backingVolume;
+  migrateRecorderSlots(measures);
   derivePlayback();
   renderAll();
   scheduleScoreRender();
@@ -1922,7 +2377,10 @@ function legacyLinesToMeasures(snap) {
     const slots = items.map(item => {
       const dur = Math.max(0.125, Number(item.durationBeats)||1);
       if (item.type==='note') {
-        return { type:'note', holes: item.holes||[false,false,false,false,false,false],
+        return { type:'note', holes: item.holes||emptyHoles(),
+                  thumbState: item.thumbState || (item.holes?.[0] ? 'closed' : 'open'),
+                  h6r: item.h6r !== undefined ? item.h6r : (item.holes?.[6] ?? false),
+                  h7r: item.h7r !== undefined ? item.h7r : (item.holes?.[7] ?? false),
           octave: Boolean(item.octave), duration:dur, eventId: item.eventId ?? makeSlotId(),
           transposedMidi: item.transposedMidi };
       }
@@ -1956,6 +2414,8 @@ function blankWorkspace() {
   syncTimeSignatureSelect();
   setImportStatus('');
   updatePlaybackControls(1);
+  pausedAtMeasure = null; pausedAtSec = 0; playbackFromMeasure = 1; playbackToMeasure = 1;
+  updatePlayBtn();
   renderAll();
   scheduleScoreRender();
   updateUndoRedoButtons();
@@ -2030,6 +2490,70 @@ function renderLibrarySongs() {
     list.appendChild(item);
   });
 }
+// ── IndexedDB for backing track blobs ───────────────────────────────
+const BACKING_DB_NAME = 'tw_backing_v1';
+const BACKING_STORE   = 'blobs';
+
+function openBackingDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(BACKING_DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(BACKING_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  });
+}
+async function saveBackingBlob(songId, blob) {
+  if (!songId || !blob) return;
+  try {
+    const db = await openBackingDb();
+    await new Promise((res, rej) => {
+      const tx = db.transaction(BACKING_STORE, 'readwrite');
+      tx.objectStore(BACKING_STORE).put(blob, songId);
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+    db.close();
+  } catch(e) { console.warn('saveBackingBlob:', e); }
+}
+async function loadBackingBlobForSong(songId) {
+  if (!songId) return null;
+  try {
+    const db = await openBackingDb();
+    const blob = await new Promise((res, rej) => {
+      const tx = db.transaction(BACKING_STORE, 'readonly');
+      const req = tx.objectStore(BACKING_STORE).get(songId);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => rej(req.error);
+    });
+    db.close();
+    return blob;
+  } catch(e) { return null; }
+}
+async function deleteBackingBlob(songId) {
+  if (!songId) return;
+  try {
+    const db = await openBackingDb();
+    await new Promise((res, rej) => {
+      const tx = db.transaction(BACKING_STORE, 'readwrite');
+      tx.objectStore(BACKING_STORE).delete(songId);
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+    db.close();
+  } catch(e) { console.warn('deleteBackingBlob:', e); }
+}
+async function attachBackingBlob(blob, name) {
+  if (!blob) return;
+  const ctx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+  audioCtx = ctx;
+  try {
+    const arrayBuf = await blob.arrayBuffer();
+    backingBuffer  = await ctx.decodeAudioData(arrayBuf);
+    backingBlob    = blob;
+    backingBlobName = name || backingBlobName || '';
+    const nameEl = document.getElementById('backingFileName');
+    if (nameEl) { nameEl.textContent = backingBlobName; nameEl.dataset.name = backingBlobName; }
+  } catch(e) { console.warn('attachBackingBlob decode error:', e); }
+}
+
 function upsertCurrentSong() {
   if (!currentSongId) return;
   const snap = getSongSnapshot();
@@ -2038,6 +2562,8 @@ function upsertCurrentSong() {
   records.unshift({ id:currentSongId, sourceId:currentSourceId||currentSongId,
     type:currentSongType||'edit', title, updatedAt:Date.now(), snapshot:snap });
   setLibrarySongs(records);
+  // Persist backing blob async
+  if (backingBlob) saveBackingBlob(currentSongId, backingBlob);
 }
 function ensureEditableRecord() {
   if (!currentSongId) { currentSongId=`draft:${Date.now()}`; currentSourceId=currentSongId; currentSongType='edit'; return; }
@@ -2050,12 +2576,28 @@ function ensureEditableRecord() {
     showToast('📋 Copia creada — editando tu versión', 'ok');
   }
 }
-function loadLibrarySong(id) {
+async function loadLibrarySong(id) {
   const record = getLibrarySongs().find(r=>r.id===id);
   if (!record) return;
   currentSongId=record.id; currentSourceId=record.sourceId||record.id; currentSongType=record.type||'edit';
+  // Reset backing before applying snapshot
+  backingBuffer=null; backingBlob=null; backingBlobName='';
   applySongSnapshot(record.snapshot);
-  setImportStatus(`Abierto desde biblioteca: ${record.title}`,'ok');
+  syncBackingUI();
+  // Try to load backing blob from IndexedDB
+  const snap = record.snapshot;
+  if (snap.backingBlobName) {
+    const blob = await loadBackingBlobForSong(id);
+    if (blob) {
+      await attachBackingBlob(blob, snap.backingBlobName);
+      syncBackingUI();
+      showToast(`Abierto: ${record.title} 🎵 con backing`, 'ok');
+    } else {
+      showToast(`Abierto: ${record.title} (backing no encontrado — recarga el archivo)`, '');
+    }
+  } else {
+    setImportStatus(`Abierto desde biblioteca: ${record.title}`, 'ok');
+  }
 }
 function deleteSelectedLibrarySong() { deleteLibrarySong(currentSongId); }
 function deleteLibrarySong(id) {
@@ -2063,6 +2605,7 @@ function deleteLibrarySong(id) {
   const record = getLibrarySongs().find(r=>r.id===id);
   if (!record||!confirm(`¿Eliminar "${record.title}"?`)) return;
   setLibrarySongs(getLibrarySongs().filter(r=>r.id!==id));
+  deleteBackingBlob(id); // async, fire and forget
   if (currentSongId===id) blankWorkspace();
   setImportStatus(`Eliminado: ${record.title}`,'ok');
 }
@@ -2116,7 +2659,7 @@ function setMode(mode) {
 
 // ── Audio ──────────────────────────────────────────────────────────────
 function playWhistleTone(midi, startTime, duration) {
-  if (!audioCtx) return;
+  if (!audioCtx || !instrumentEnabled) return;
   const freq = frequencyFromMidi(midi);
   const gain = audioCtx.createGain();
   const osc = audioCtx.createOscillator();
@@ -2135,12 +2678,16 @@ function playWhistleTone(midi, startTime, duration) {
 async function previewTabSlot(slot, mIdx) {
   const midi = midiFromTabSlot(slot);
   if (!midi) return;
-  // Update play-from to start from this measure on next play
+  // Update play-from to start from this measure on next play, but clamp against play-to
   if (mIdx != null) {
     const measureNum = mIdx + 1;
     const fromEl = document.getElementById('play-from');
-    if (fromEl) fromEl.value = measureNum;
-    // Update score highlight exactly like edit mode
+    const toEl   = document.getElementById('play-to');
+    if (fromEl) {
+      fromEl.value = measureNum;
+      // Ensure to >= from
+      if (toEl && Number(toEl.value) < measureNum) toEl.value = measureNum;
+    }
     selectedRef = { mIdx, sIdx: measures[mIdx]?.slots.indexOf(slot) ?? 0 };
     if (scoreRendered) {
       updateScoreMeasure(measureNum);
@@ -2149,7 +2696,6 @@ async function previewTabSlot(slot, mIdx) {
   }
   if (isPlaying) return;
   currentEventId = slot.eventId ?? null;
-  // Update playing highlight without full DOM rebuild
   document.querySelectorAll('#sheet .tab-note.playing')
     .forEach(el => el.classList.remove('playing'));
   const slotEl = mIdx != null
@@ -2165,50 +2711,222 @@ async function previewTabSlot(slot, mIdx) {
   }, 500);
 }
 function isLoopEnabled() { return Boolean(document.getElementById('loop-toggle')?.checked); }
+
+// ── Playback pause state ────────────────────────────────────────────
+let pausedAtMeasure  = null;  // measure number where we paused
+let pausedAtSec      = 0;     // exact elapsed seconds into the range when paused
+let pausedWallTime   = 0;     // audioCtx.currentTime when pause happened
+let playbackFromMeasure = 1;
+let playbackToMeasure   = 1;
+let playbackStartWall   = 0;  // audioCtx.currentTime when _startPlayback began audio
+let playbackIntroDelay  = 0;  // intro offset in seconds
+
+function updatePlayBtn() {
+  const btn = document.getElementById('play-btn');
+  if (!btn) return;
+  if (isPlaying)               { btn.textContent = '⏸ Pausa';     btn.title = 'Pausar'; }
+  else if (pausedAtMeasure != null) { btn.textContent = '▶ Reanudar'; btn.title = 'Reanudar'; }
+  else                         { btn.textContent = '▶ Play';      btn.title = 'Reproducir'; }
+}
+
+function togglePlayPause() {
+  if (isPlaying)               pausePlayback();
+  else if (pausedAtMeasure != null) resumePlayback();
+  else                         playSelectedRange();
+}
+
+function pausePlayback() {
+  if (!isPlaying) return;
+  // Capture exact elapsed time before suspending
+  const elapsed = audioCtx ? (audioCtx.currentTime - playbackStartWall) : 0;
+  pausedAtSec = Math.max(0, elapsed - playbackIntroDelay);
+
+  // Cancel all pending timers (note highlights + end timer)
+  playbackTimers.forEach(id => clearTimeout(id)); playbackTimers = [];
+  // Stop oscillators — audio will be silenced
+  activeOscillators.forEach(osc => { try { osc.stop(); } catch(e) {} }); activeOscillators = [];
+  // Pause backing: stop the source but remember position
+  stopBackingSource();
+  // Suspend AudioContext to freeze its clock
+  if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
+
+  // Figure out which measure we're in based on elapsed beats
+  const bpm = Math.max(30, Math.min(240, Number(document.getElementById('play-bpm')?.value) || 100));
+  const secPerBeat = 60 / bpm;
+  const baseBeat = measureStartBeats[playbackFromMeasure] ?? 0;
+  const elapsedBeats = pausedAtSec / secPerBeat;
+  const absoluteBeat = baseBeat + elapsedBeats;
+  // Find current measure from absoluteBeat
+  let measAtPause = playbackFromMeasure;
+  for (let m = playbackFromMeasure; m <= playbackToMeasure; m++) {
+    if ((measureStartBeats[m] ?? Infinity) <= absoluteBeat + 0.001) measAtPause = m;
+    else break;
+  }
+  pausedAtMeasure = measAtPause;
+  currentMeasure = measAtPause;
+
+  const fromEl = document.getElementById('play-from');
+  if (fromEl) fromEl.value = measAtPause;
+
+  isPlaying = false;
+  updatePlayBtn();
+  renderAll();
+}
+
+async function resumePlayback() {
+  if (pausedAtMeasure == null) { playSelectedRange(); return; }
+  // Resume AudioContext first
+  if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+  await _startPlayback(playbackFromMeasure, playbackToMeasure, pausedAtSec);
+  pausedAtMeasure = null;
+}
+
 function stopPlayback() {
   playbackTimers.forEach(id=>clearTimeout(id)); playbackTimers=[];
   activeOscillators.forEach(osc=>{ try{osc.stop();}catch(e){} }); activeOscillators=[];
+  stopBackingSource();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   currentEventId=null; currentMeasure=null; isPlaying=false;
+  pausedAtMeasure=null; pausedAtSec=0;
+  const fromEl = document.getElementById('play-from');
+  if (fromEl) fromEl.value = playbackFromMeasure || 1;
+  updatePlayBtn();
   updateScoreNote(null);
-  updateScoreSelection(); // keep selectedRef highlight
+  updateScoreSelection();
   renderAll();
 }
+
+// Validate that play-to >= play-from whenever either changes
+function clampPlayRange() {
+  const fromEl = document.getElementById('play-from');
+  const toEl   = document.getElementById('play-to');
+  if (!fromEl || !toEl) return;
+  const from = Math.max(1, Math.min(playbackMaxMeasure, Number(fromEl.value) || 1));
+  let   to   = Math.max(1, Math.min(playbackMaxMeasure, Number(toEl.value)   || 1));
+  if (to < from) { to = from; toEl.value = to; }
+  fromEl.value = from;
+}
+
 async function playSelectedRange() {
-  if (!playbackEvents.length) { setPlaybackStatus('No hay notas para reproducir.','error'); return; }
-  stopPlayback();
+  clampPlayRange();
+  pausedAtMeasure = null; pausedAtSec = 0;
   const fromEl=document.getElementById('play-from');
   const toEl=document.getElementById('play-to');
+  const fromMeasure=Math.max(1,Math.min(playbackMaxMeasure,Number(fromEl?.value)||1));
+  const toMeasure=Math.max(fromMeasure,Math.min(playbackMaxMeasure,Number(toEl?.value)||playbackMaxMeasure));
+  playbackTimers.forEach(id=>clearTimeout(id)); playbackTimers=[];
+  activeOscillators.forEach(osc=>{ try{osc.stop();}catch(e){} }); activeOscillators=[];
+  stopBackingSource();
+  if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+  isPlaying = false;
+  await _startPlayback(fromMeasure, toMeasure, 0);
+}
+
+// skipSec: how many seconds into the range to skip (for resume-from-pause)
+async function _startPlayback(fromMeasure, toMeasure, skipSec) {
+  skipSec = skipSec || 0;
+  if (!playbackEvents.length) { setPlaybackStatus('No hay notas para reproducir.','error'); return; }
   const bpmEl=document.getElementById('play-bpm');
-  const fromMeasure=Math.max(1,Math.min(playbackMaxMeasure,Number(fromEl.value)||1));
-  const toMeasure=Math.max(fromMeasure,Math.min(playbackMaxMeasure,Number(toEl.value)||playbackMaxMeasure));
-  const bpm=Math.max(30,Math.min(240,Number(bpmEl.value)||100));
-  fromEl.value=fromMeasure; toEl.value=toMeasure; bpmEl.value=bpm;
-  const events=playbackEvents.filter(ev=>ev.measure>=fromMeasure&&ev.measure<=toMeasure&&Number.isFinite(ev.midi));
-  if (!events.length) { setPlaybackStatus(`No hay notas entre compases ${fromMeasure} y ${toMeasure}.`,'error'); return; }
+  const bpm=Math.max(30,Math.min(240,Number(bpmEl?.value)||100));
+  if (bpmEl) bpmEl.value=bpm;
+
+  const allEvents=playbackEvents.filter(ev=>ev.measure>=fromMeasure&&ev.measure<=toMeasure&&Number.isFinite(ev.midi));
+  if (!allEvents.length) { setPlaybackStatus(`No hay notas entre compases ${fromMeasure} y ${toMeasure}.`,'error'); return; }
+
   audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
   if (audioCtx.state==='suspended') await audioCtx.resume();
-  const secPerBeat=60/bpm;
-  const baseBeat=measureStartBeats[fromMeasure]??events[0].startBeat;
-  const startAt=audioCtx.currentTime+0.08;
-  const lastEndBeat=Math.max(...events.map(ev=>ev.startBeat+ev.durationBeats));
-  isPlaying=true;
-  for (let m=fromMeasure;m<=toMeasure;m++) {
-    const mb=measureStartBeats[m]; if (!Number.isFinite(mb)) continue;
-    const offset=Math.max(0,(mb-baseBeat)*secPerBeat);
-    playbackTimers.push(setTimeout(()=>{ currentMeasure=m; renderAll(); updateScoreMeasure(m); updateScoreNote(null); }, offset*1000));
+
+  playbackFromMeasure = fromMeasure;
+  playbackToMeasure   = toMeasure;
+
+  if (backingBuffer && backingEnabled && backingBpmMismatch()) {
+    backingEnabled = false; syncBackingUI();
+    showToast('⚠️ Backing desactivado — restablece el tempo a ' + backingOriginalBpm + ' BPM', 'error');
   }
-  events.forEach(ev=>{
-    const offset=Math.max(0,(ev.startBeat-baseBeat)*secPerBeat);
-    const dur=Math.max(0.08,ev.durationBeats*secPerBeat*0.92);
-    playWhistleTone(ev.midi, startAt+offset, dur);
-    playbackTimers.push(setTimeout(()=>{ currentEventId=ev.id; currentMeasure=ev.measure; renderAll(); updateScoreMeasure(ev.measure); updateScoreNote(ev.id); }, offset*1000));
+
+  const secPerBeat  = 60 / bpm;
+  const baseBeat    = measureStartBeats[fromMeasure] ?? allEvents[0].startBeat;
+  const lastEndBeat = Math.max(...allEvents.map(ev=>ev.startBeat+ev.durationBeats));
+  const totalRangeSec = Math.max(0, (lastEndBeat - baseBeat) * secPerBeat);
+
+  // ── Backing sync ────────────────────────────────────────────────
+  // introDelaySec: extra wait before flute starts (only when starting from
+  // measure 1 with no skip and a non-zero backingOffsetSec)
+  let introDelaySec = 0;
+
+  if (backingBuffer && backingEnabled) {
+    const beatsAtFrom   = measureStartBeats[fromMeasure] ?? 0;
+    const backingOffset = backingOffsetSec + beatsAtFrom * secPerBeat + skipSec;
+    // For measure-1 fresh start: play audio from 0, delay flute by the intro
+    if (fromMeasure === 1 && skipSec === 0 && backingOffsetSec > 0) {
+      introDelaySec = backingOffsetSec;
+      startBackingAt(0, audioCtx.currentTime + 0.05);
+    } else {
+      // Any other case: seek the audio to the right spot, no intro delay
+      startBackingAt(backingOffset, audioCtx.currentTime + 0.05);
+    }
+  }
+
+  playbackIntroDelay = introDelaySec;
+  // wallStart = the audioCtx time when the first note should play
+  const wallStart = audioCtx.currentTime + 0.08 + introDelaySec;
+  // playbackStartWall tracks "wall time zero" for pause offset calculation:
+  // elapsed_in_range = (currentTime - playbackStartWall) - introDelaySec + skipSec
+  playbackStartWall = audioCtx.currentTime + 0.08 - skipSec;
+
+  isPlaying = true;
+  updatePlayBtn();
+
+  // Schedule measure highlights
+  for (let m = fromMeasure; m <= toMeasure; m++) {
+    const mb = measureStartBeats[m]; if (!Number.isFinite(mb)) continue;
+    const offsetInRange = Math.max(0, (mb - baseBeat) * secPerBeat);
+    const delayMs = (introDelaySec + offsetInRange - skipSec) * 1000;
+    if (delayMs < -50) continue;
+    const _m = m;
+    playbackTimers.push(setTimeout(()=>{
+      currentMeasure = _m;
+      const fe = document.getElementById('play-from');
+      if (fe) fe.value = _m;
+      renderAll(); updateScoreMeasure(_m); updateScoreNote(null);
+    }, Math.max(0, delayMs)));
+  }
+
+  // Schedule note playback
+  allEvents.forEach(ev => {
+    const offsetInRange = Math.max(0, (ev.startBeat - baseBeat) * secPerBeat);
+    const delayMs = (introDelaySec + offsetInRange - skipSec) * 1000;
+    if (delayMs < -50) return;
+    const audioTime = wallStart + Math.max(0, offsetInRange - skipSec);
+    const dur = Math.max(0.08, ev.durationBeats * secPerBeat * 0.92);
+    playWhistleTone(ev.midi, audioTime, dur);
+    playbackTimers.push(setTimeout(()=>{
+      currentEventId=ev.id; currentMeasure=ev.measure; renderAll();
+      updateScoreMeasure(ev.measure); updateScoreNote(ev.id);
+    }, Math.max(0, delayMs)));
   });
+
+  // End-of-range timer
+  const endDelayMs = (introDelaySec + totalRangeSec - skipSec) * 1000 + 200;
   playbackTimers.push(setTimeout(()=>{
-    if (isLoopEnabled()) { currentEventId=null; currentMeasure=null; renderAll(); updateScoreMeasure(fromMeasure); updateScoreNote(null); playSelectedRange(); return; }
-    currentEventId=null; currentMeasure=null; isPlaying=false; renderAll();
-    updateScoreMeasure(1); updateScoreNote(null);
-    setPlaybackStatus(`Reproducción lista: compases ${fromMeasure} a ${toMeasure}.`,'ok');
-  }, Math.max(0,(lastEndBeat-baseBeat)*secPerBeat*1000)+200));
+    if (isLoopEnabled()) {
+      const fe = document.getElementById('play-from');
+      if (fe) fe.value = playbackFromMeasure;
+      currentEventId=null; currentMeasure=null;
+      renderAll(); updateScoreMeasure(playbackFromMeasure); updateScoreNote(null);
+      _startPlayback(playbackFromMeasure, playbackToMeasure, 0);
+      return;
+    }
+    stopBackingSource();
+    currentEventId=null; currentMeasure=null; isPlaying=false;
+    pausedAtMeasure=null; pausedAtSec=0;
+    const fe = document.getElementById('play-from');
+    if (fe) fe.value = playbackFromMeasure;
+    updatePlayBtn();
+    renderAll(); updateScoreMeasure(1); updateScoreNote(null);
+    setPlaybackStatus(`Reproducción lista: compases ${playbackFromMeasure} a ${toMeasure}.`,'ok');
+  }, Math.max(0, endDelayMs)));
+
   setPlaybackStatus(`Reproduciendo compases ${fromMeasure} a ${toMeasure} a ${bpm} BPM.`,'ok');
 }
 
@@ -2257,7 +2975,7 @@ function importMusicXml(xmlText, fileName='musicxml') {
   const doc=new DOMParser().parseFromString(xmlText,'application/xml');
   if (doc.querySelector('parsererror')) { setImportStatus('MusicXML no válido.','error'); return; }
   const scoreKey=getScoreMajorKey(doc)||'C';
-  const transposeBy=(KEY_ROOT[whistleKey]??2)-(NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0);
+  const transposeBy=currentInstrument==='recorder' ? (0-(NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0)) : (KEY_ROOT[whistleKey]??2)-(NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0);
   let notesImported=0, restsImported=0, skippedChords=0, skippedVoices=0;
   let divisions=1, tempo=100, beatsPerMeasure=4;
   let importedBeats=4, importedBeatType=4;
@@ -2293,8 +3011,11 @@ function importMusicXml(xmlText, fileName='musicxml') {
       if (midi==null) return;
       const noteInfo=noteFromMidiForWhistle(midi+transposeBy);
       if (noteInfo) {
+        // degree: offset relativo (0-11) dentro de la escala del instrumento
+        const degree = getFingeringOffsets(noteInfo.octave)[noteInfo.holes.map(h=>h?'1':'0').join('')] ?? null;
         slots.push({ type:'note', holes:noteInfo.holes, octave:noteInfo.octave,
-          duration:durationBeats||1, eventId:eventId++, transposedMidi:noteInfo.transposedMidi });
+          duration:durationBeats||1, eventId:eventId++, transposedMidi:noteInfo.transposedMidi,
+          degree: degree });
         notesImported++;
       }
     });
@@ -2570,6 +3291,54 @@ ${measuresXml}  </part>
 </score-partwise>
 `;
 }
+// ── JSON export / import ─────────────────────────────────────────────────────
+function exportTabJson() {
+  const snap = getSongSnapshot();
+  const title = (snap.title || 'tablatura').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'tablatura';
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = title + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('JSON descargado: ' + a.download);
+}
+
+function importTabJson(event) {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.measures && !data.lines) throw new Error('JSON sin datos de tablatura válidos');
+      // Assign a fresh song ID so it's saved as a new entry, not overwriting anything
+      const newId = 'json:' + Date.now();
+      currentSongId   = newId;
+      currentSourceId = newId;
+      currentSongType = 'edit';
+      // Append (JSON) to title so user can identify it
+      if (data.title && !data.title.endsWith('(JSON)')) data.title = data.title + ' (JSON)';
+      applySongSnapshot(data);
+      afterMutation();
+      upsertCurrentSong(); // save as new library entry immediately
+      if (data.backingBlobName) {
+        showToast('✅ Importado. Carga el backing track manualmente: "' + data.backingBlobName + '"', false, 5000);
+      } else {
+        showToast('✅ Importado y guardado: ' + (data.title || file.name));
+      }
+      // Close settings panel if open
+      const panel = document.getElementById('settings-panel');
+      if (panel && panel.classList.contains('open')) panel.classList.remove('open');
+    } catch(err) {
+      showToast('❌ No se pudo leer el JSON: ' + err.message, true);
+    }
+  };
+  reader.readAsText(file);
+}
+
 function exportMusicXml() {
   const xml=buildMusicXml();
   const title=document.getElementById('song-title').value||'tin-whistle-tab';
@@ -2598,10 +3367,46 @@ function exportPDF() {
 
 // ── Print ──────────────────────────────────────────────────────────────
 function noteToSVG(slot) {
+  if (currentInstrument==='recorder') {
+    const h=slot.holes||Array(8).fill(false);
+    const w=46,svgH=144,CL='#111',OP='#fff',ST='#444',SW='1.5';
+    const noteName=getNoteName(h,slot.octave,slot);
+    const isOct2 = !!slot.octave;
+    // Pulgar: medio tapado en 2ª octava (mitad superior tapada, inferior abierta)
+    function thumbFill() {
+      if (!isOct2) return h[0] ? CL : OP;
+      return 'halfT'; // se reemplaza abajo con patrón SVG
+    }
+    function circ(cx,cy,r,filled,isThumb) {
+      let fill;
+      if (isThumb && isOct2) {
+        // Representar "medio tapado" con mitad superior oscura
+        return `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="${ST}" stroke-width="${SW}" fill="url(#ht)"/>`;
+      }
+      fill = filled ? CL : OP;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="${ST}" stroke-width="${SW}" fill="${fill}"/>`;
+    }
+    let s=`<svg width="${w}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">`;
+    // Degradado para pulgar medio tapado
+    s+=`<defs><linearGradient id="ht" x1="0" y1="0" x2="0" y2="1"><stop offset="50%" stop-color="#111"/><stop offset="50%" stop-color="#fff"/></linearGradient></defs>`;
+    if(noteName) s+=`<text x="23" y="10" text-anchor="middle" font-size="9" font-weight="bold" font-family="Georgia,serif" fill="#1d4ed8">${noteName}</text>`;
+    s+=circ(17,22,7,h[1],false);    // H1
+    s+=circ(35,22,4.5,h[0],true);   // Thumb (medio tapado en 2ª oct)
+    s+=circ(17,36,7,h[2],false);    // H2
+    s+=circ(17,51,7,h[3],false);    // H3
+    s+=circ(17,66,7,h[4],false);    // H4
+    s+=circ(17,81,7,h[5],false);    // H5
+    s+=circ(12,96,5,h[6],false);    // H6 left
+    s+=circ(24,96,3.5,h[6],false);  // H6 right
+    s+=circ(12,111,5,h[7],false);   // H7 left
+    s+=circ(24,111,3.5,h[7],false); // H7 right
+    s+='</svg>'; return s;
+  }
+  // Whistle (original)
   const w=22,circR=5,gap=3,padTop=18,padBot=16;
   const totalH=padTop+6*(circR*2)+5*gap+padBot;
   let svg=`<svg width="${w}" height="${totalH}" xmlns="http://www.w3.org/2000/svg">`;
-  const noteName=getNoteName(slot.holes||[],slot.octave);
+  const noteName=getNoteName(slot.holes||[],slot.octave,slot);
   if (noteName) svg+=`<text x="${w/2}" y="11" text-anchor="middle" font-size="9" font-weight="bold" font-family="Georgia,serif" fill="#1d4ed8">${noteName}</text>`;
   HOLE_ORDER.forEach((h,i)=>{
     const cx=w/2; const cy=padTop+i*(circR*2+gap)+circR;
@@ -2612,7 +3417,7 @@ function noteToSVG(slot) {
 }
 function buildPrintHTML() {
   const title = document.getElementById('song-title').value || 'Tin Whistle Tab';
-  const keyStr = `Whistle en ${whistleKey}`;
+  const keyStr = currentInstrument==='recorder' ? `Flauta Dulce (${recorderStyle==='baroque'?'Barroco':'Alemán'})` : `Whistle en ${whistleKey}`;
 
   const rows = [[]];
   measures.forEach((m, mi) => {
@@ -2627,7 +3432,7 @@ function buildPrintHTML() {
       if (slot.type === 'space') {
         return `<div class="slot rest-slot"></div>`;
       }
-      const noteName = getNoteName(slot.holes || [], slot.octave);
+      const noteName = getNoteName(slot.holes || [], slot.octave, slot);
       const holes = HOLE_ORDER.map(h =>
         `<div class="hole ${(slot.holes||[])[h] ? 'filled' : ''}"></div>`
       ).join('');
@@ -2716,6 +3521,66 @@ function buildPrintHTML() {
 </html>`;
 }
 
+
+// ── Recorder hole SVG builder ───────────────────────────────────────
+function buildRecorderHolesSVG(hArr, mIdx, sIdx, slot) {
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox','0 0 46 132');
+  svg.setAttribute('width','46'); svg.setAttribute('height','132');
+  svg.style.cssText='display:block;flex-shrink:0;';
+  const CLOSED='#111',OPEN='#fff',ST='#444',SW='1.5';
+
+  // Defs: degradado para pulgar medio tapado (mitad superior oscura)
+  const defs=document.createElementNS(NS,'defs');
+  const grad=document.createElementNS(NS,'linearGradient');
+  grad.setAttribute('id',`ht_${mIdx}_${sIdx}`);
+  grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s1=document.createElementNS(NS,'stop'); s1.setAttribute('offset','50%'); s1.setAttribute('stop-color','#111');
+  const s2=document.createElementNS(NS,'stop'); s2.setAttribute('offset','50%'); s2.setAttribute('stop-color','#fff');
+  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+  const HALF=`url(#ht_${mIdx}_${sIdx})`;
+
+  const thumbState = (slot && slot.thumbState) || (hArr[0] ? 'closed' : 'open');
+  const h6r = slot ? (slot.h6r !== undefined ? slot.h6r : hArr[6]) : hArr[6];
+  const h7r = slot ? (slot.h7r !== undefined ? slot.h7r : hArr[7]) : hArr[7];
+
+  function circleFill(covered) { return covered ? CLOSED : OPEN; }
+
+  function addCircle(cx, cy, r, covered, onClick) {
+    const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',String(cx)); c.setAttribute('cy',String(cy)); c.setAttribute('r',String(r));
+    c.setAttribute('stroke',ST); c.setAttribute('stroke-width',SW);
+    c.setAttribute('fill', covered);
+    c.style.cursor='pointer';
+    c.addEventListener('click', e=>{ e.stopPropagation(); if(currentMode==='play') previewTabSlot(slot,mIdx); else onClick(); });
+    svg.appendChild(c);
+  }
+
+  // ── Pulgar (derecha, pequeño) — cicla open→half→closed al hacer click ──
+  const thumbFill = thumbState==='closed' ? CLOSED : thumbState==='half' ? HALF : OPEN;
+  addCircle(35, 16, 4.5, thumbFill, ()=>toggleHole(mIdx,sIdx,0));
+
+  // ── H1 (izquierda, grande) ──
+  addCircle(17, 16, 7, circleFill(hArr[1]), ()=>toggleHole(mIdx,sIdx,1));
+
+  // ── H2–H5 simples ──
+  addCircle(17, 32, 7, circleFill(hArr[2]), ()=>toggleHole(mIdx,sIdx,2));
+  addCircle(17, 49, 7, circleFill(hArr[3]), ()=>toggleHole(mIdx,sIdx,3));
+  addCircle(17, 66, 7, circleFill(hArr[4]), ()=>toggleHole(mIdx,sIdx,4));
+  addCircle(17, 83, 7, circleFill(hArr[5]), ()=>toggleHole(mIdx,sIdx,5));
+
+  // ── H6 hoyo doble: izquierdo (grande) + derecho (pequeño) independientes ──
+  addCircle(10, 100, 5,   circleFill(hArr[6]), ()=>toggleHole(mIdx,sIdx,6,'left'));
+  addCircle(24, 100, 3.5, circleFill(h6r),     ()=>toggleHole(mIdx,sIdx,6,'right'));
+
+  // ── H7 hoyo doble: izquierdo + derecho independientes ──
+  addCircle(10, 118, 5,   circleFill(hArr[7]), ()=>toggleHole(mIdx,sIdx,7,'left'));
+  addCircle(24, 118, 3.5, circleFill(h7r),     ()=>toggleHole(mIdx,sIdx,7,'right'));
+
+  return svg;
+}
 
 // ── Render ─────────────────────────────────────────────────────────────
 function renderAll() {
@@ -2836,12 +3701,15 @@ function renderAll() {
             if (currentMode==='play') {
               // In play mode: select for score highlight + set play-from, no sound
               selectedRef = { mIdx, sIdx };
+              const measureNum = mIdx + 1;
               const fromEl = document.getElementById('play-from');
-              if (fromEl) fromEl.value = mIdx + 1;
+              const toEl   = document.getElementById('play-to');
+              if (fromEl) fromEl.value = measureNum;
+              if (toEl && Number(toEl.value) < measureNum) toEl.value = measureNum;
               document.querySelectorAll('#sheet .tab-note.selected, #sheet .tab-space.selected')
                 .forEach(el => el.classList.remove('selected'));
               sp.classList.add('selected');
-              if (scoreRendered) { updateScoreMeasure(mIdx + 1); updateScoreSelection(); }
+              if (scoreRendered) { updateScoreMeasure(measureNum); updateScoreSelection(); }
             } else {
               selectSlot(mIdx, sIdx);
             }
@@ -2885,25 +3753,29 @@ function renderAll() {
           del.className='del-note'; del.innerHTML='×'; del.title='Convertir a silencio';
           del.onclick=e=>{ e.stopPropagation(); if(currentMode==='edit') deleteSlot(mIdx,sIdx); else previewTabSlot(slot, mIdx); };
           noteEl.appendChild(del);
-          const noteName=getNoteName(slot.holes,slot.octave);
+          const noteName=getNoteName(slot.holes,slot.octave,slot);
           const nameEl=document.createElement('div');
           nameEl.className='note-name'+(noteName?'':' unknown');
           nameEl.textContent=noteName||'·';
           noteEl.appendChild(nameEl);
-          const grid=document.createElement('div');
-          grid.className='holes-grid';
-          HOLE_ORDER.forEach(h=>{
-            const hEl=document.createElement('div');
-            hEl.className='hole'+(slot.holes[h]?' filled':'');
-            hEl.title=`Hoyo ${h+1}`;
-            hEl.onclick=e=>{
-              e.stopPropagation();
-              if (currentMode==='play') previewTabSlot(slot, mIdx);
-              else toggleHole(mIdx,sIdx,h);
-            };
-            grid.appendChild(hEl);
-          });
-          noteEl.appendChild(grid);
+          if (currentInstrument==='recorder') {
+            noteEl.appendChild(buildRecorderHolesSVG(slot.holes||Array(8).fill(false), mIdx, sIdx, slot));
+          } else {
+            const grid=document.createElement('div');
+            grid.className='holes-grid';
+            HOLE_ORDER.forEach(h=>{
+              const hEl=document.createElement('div');
+              hEl.className='hole'+(slot.holes[h]?' filled':'');
+              hEl.title=`Hoyo ${h+1}`;
+              hEl.onclick=e=>{
+                e.stopPropagation();
+                if (currentMode==='play') previewTabSlot(slot, mIdx);
+                else toggleHole(mIdx,sIdx,h);
+              };
+              grid.appendChild(hEl);
+            });
+            noteEl.appendChild(grid);
+          }
           const oct=document.createElement('div');
           oct.className='octave-btn'+(slot.octave?' on':'');
           oct.textContent='+'; oct.title='Segunda octava';
@@ -2934,16 +3806,265 @@ function renderAll() {
       lineEl.appendChild(addEl);
     }
   });
+
+  // Auto-scroll sheet: keep current measure centered (like sheet music)
+  if (scoreAutoScroll && currentMeasure) {
+    const cm = sheet.querySelector('.current-measure');
+    if (cm) {
+      const sr = sheet.getBoundingClientRect();
+      const mr = cm.getBoundingClientRect();
+      sheet.scrollTo({
+        left: sheet.scrollLeft + mr.left - sr.left - (sr.width / 2) + (mr.width / 2),
+        behavior: 'smooth'
+      });
+    }
+  }
 }
 
-// ── Persistence ─────────────────────────────────────────────────────────
+// ── Backing track state ────────────────────────────────────────────
+let backingBuffer      = null;   // decoded AudioBuffer
+let backingBlob        = null;   // original File for re-use
+let backingBlobName    = '';
+let backingSource      = null;   // active BufferSourceNode
+let backingPreviewSrc  = null;
+let backingGain        = null;   // GainNode
+let backingVolume      = 0.8;
+let backingOffsetSec   = 0;      // seconds of intro before tab enters
+let backingOriginalBpm = 0;      // BPM when backing was loaded
+let backingEnabled     = true;
+let instrumentEnabled  = true;   // whether the whistle sound plays
+let backingPreviewing  = false;
+let backingPanelOpen   = false;
+let previewStartedAt   = 0;
+let previewFromSec     = 0;
+
+function toggleBackingPanel() {
+  backingPanelOpen = !backingPanelOpen;
+  document.getElementById('backingPanel').classList.toggle('open', backingPanelOpen);
+  document.getElementById('backingIconBtn').classList.toggle('active', backingPanelOpen);
+}
+
+function getAudioCtx() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+async function loadBackingTrack(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  event.target.value = '';
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') await ctx.resume();
+  try {
+    const arrayBuf = await file.arrayBuffer();
+    backingBuffer      = await ctx.decodeAudioData(arrayBuf);
+    backingBlob        = file;
+    backingBlobName    = file.name;
+    backingEnabled     = true;
+    backingOriginalBpm = Math.max(30, Math.min(240, Number(document.getElementById('play-bpm')?.value) || 100));
+    const nameEl = document.getElementById('backingFileName');
+    if (nameEl) { nameEl.textContent = file.name; nameEl.dataset.name = file.name; }
+    syncBackingUI();
+    // Ensure we have a song ID to attach the blob to
+    if (!currentSongId) { currentSongId=`draft:${Date.now()}`; currentSourceId=currentSongId; currentSongType='edit'; }
+    save(); // saves snapshot with backingBlobName + persists blob via upsertCurrentSong
+    showToast('🎵 Backing cargado y guardado', 'ok');
+  } catch(e) {
+    showToast('No se pudo decodificar el audio: ' + e.message, 'error');
+  }
+}
+
+function clearBackingTrack() {
+  stopBackingSource();
+  stopBackingPreview();
+  backingBuffer = null; backingBlob = null; backingEnabled = true;
+  backingOffsetSec = 0; backingOriginalBpm = 0;
+  syncBackingUI();
+  showToast('Backing eliminado.');
+}
+
+function stopBackingSource() {
+  if (backingSource) {
+    try { backingSource.stop(); } catch(_) {}
+    backingSource.disconnect();
+    backingSource = null;
+  }
+}
+
+function stopBackingPreview() {
+  if (backingPreviewSrc) {
+    try { backingPreviewSrc.stop(); } catch(_) {}
+    backingPreviewSrc.disconnect();
+    backingPreviewSrc = null;
+  }
+  backingPreviewing = false;
+  const btn = document.getElementById('bpPreviewBtn');
+  if (btn) btn.textContent = '▶ Escuchar';
+}
+
+function toggleBackingPreview() {
+  if (backingPreviewing) { stopBackingPreview(); return; }
+  if (!backingBuffer) return;
+  const ctx = getAudioCtx();
+  ensureBackingGain(ctx);
+  backingPreviewSrc = ctx.createBufferSource();
+  backingPreviewSrc.buffer = backingBuffer;
+  backingPreviewSrc.connect(backingGain);
+  backingPreviewSrc.start(ctx.currentTime, 0);
+  previewStartedAt = ctx.currentTime;
+  previewFromSec   = 0;
+  backingPreviewSrc.onended = () => {
+    backingPreviewing = false; backingPreviewSrc = null;
+    const b = document.getElementById('bpPreviewBtn'); if (b) b.textContent = '▶ Escuchar';
+  };
+  backingPreviewing = true;
+  const btn = document.getElementById('bpPreviewBtn');
+  if (btn) btn.textContent = '■ Detener';
+}
+
+function markBackingEntry() {
+  if (!backingPreviewing || !backingPreviewSrc) {
+    showToast('Primero presiona ▶ Escuchar, luego marca cuando entra la flauta.', 'error');
+    return;
+  }
+  const ctx = getAudioCtx();
+  const elapsed = ctx.currentTime - previewStartedAt;
+  backingOffsetSec = Math.round((previewFromSec + elapsed) * 100) / 100;
+  syncBackingUI();
+  showToast('🎯 Entrada marcada en ' + backingOffsetSec.toFixed(2) + 's', 'ok');
+}
+
+function ensureBackingGain(ctx) {
+  if (!backingGain) {
+    backingGain = ctx.createGain();
+    backingGain.gain.value = backingVolume;
+    backingGain.connect(ctx.destination);
+  }
+}
+
+function startBackingAt(audioPosSec, atCtxTime) {
+  if (!backingBuffer || !backingEnabled) return;
+  stopBackingSource();
+  stopBackingPreview();
+  const ctx = getAudioCtx();
+  ensureBackingGain(ctx);
+  backingSource = ctx.createBufferSource();
+  backingSource.buffer = backingBuffer;
+  backingSource.connect(backingGain);
+  const from = Math.max(0, Math.min(audioPosSec, backingBuffer.duration - 0.01));
+  backingSource.start(atCtxTime, from);
+  const _src = backingSource;
+  backingSource.onended = () => { if (backingSource === _src) backingSource = null; };
+}
+
+// Returns true if backing started and playback needs intro delay
+function startBackingForMeasure(measureNum) {
+  if (!backingBuffer || !backingEnabled) return false;
+  const bpm = Math.max(30, Math.min(240, Number(document.getElementById('play-bpm')?.value) || 100));
+  if (backingOriginalBpm > 0 && bpm !== backingOriginalBpm) {
+    backingEnabled = false; syncBackingUI();
+    showToast('⚠️ Backing desactivado — restablece el tempo a ' + backingOriginalBpm + ' BPM', 'error');
+    return false;
+  }
+  const ctx = getAudioCtx();
+  const beatSec = 60 / bpm;
+  // measureStartBeats[measureNum] = absolute beat position of the start of measureNum
+  const beatsAtMeasure = measureStartBeats[measureNum] ?? 0;
+  // audioPos = where in the audio file this measure starts
+  // backingOffsetSec is how many seconds of intro the audio has before measure 1
+  const audioPos = backingOffsetSec + beatsAtMeasure * beatSec;
+
+  if (measureNum === 1 && backingOffsetSec > 0) {
+    // Measure 1 with intro: start audio from 0, delay tab by the intro length
+    startBackingAt(0, ctx.currentTime + 0.05);
+    return true; // caller delays tab by backingOffsetSec
+  } else {
+    // Any other measure: jump the audio to the correct position
+    startBackingAt(audioPos, ctx.currentTime + 0.05);
+    return false;
+  }
+}
+
+function setBackingVolume(val) {
+  backingVolume = parseFloat(val);
+  if (backingGain) backingGain.gain.value = backingVolume;
+  syncBackingUI();
+}
+
+function setBackingOffset(val) {
+  backingOffsetSec = Math.max(0, parseFloat(val) || 0);
+  syncBackingUI();
+}
+
+function backingBpmMismatch() {
+  if (!backingBuffer || backingOriginalBpm <= 0) return false;
+  const cur = Math.max(30, Math.min(240, Number(document.getElementById('play-bpm')?.value) || 100));
+  return cur !== backingOriginalBpm;
+}
+
+function toggleBackingEnabled() {
+  if (!backingEnabled && backingBpmMismatch()) {
+    showToast('⚠️ Restablece el tempo a ' + backingOriginalBpm + ' BPM para activar el backing', 'error');
+    return;
+  }
+  backingEnabled = !backingEnabled;
+  syncBackingUI();
+  save();
+}
+
+function toggleInstrumentEnabled() {
+  instrumentEnabled = !instrumentEnabled;
+  syncBackingUI();
+  save();
+}
+
+function syncBackingUI() {
+  const hasFile = !!backingBuffer;
+  ['bpActiveRow','bpVolRow','bpOffsetRow','bpPreviewRow','bpDivider1'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = hasFile ? '' : 'none';
+  });
+  const nameEl = document.getElementById('backingFileName');
+  if (nameEl) nameEl.textContent = hasFile ? (nameEl.dataset.name || '—') : 'Sin archivo';
+
+  const enBtn = document.getElementById('bpEnableBtn');
+  if (enBtn) {
+    const locked = backingBpmMismatch();
+    enBtn.textContent = locked ? '🔒 Backing: bloqueado' : (backingEnabled ? '🎵 Backing: ON' : '🔇 Backing: OFF');
+    enBtn.className = 'backing-btn' + (backingEnabled && !locked ? ' active' : '');
+    enBtn.style.opacity = locked ? '0.6' : '';
+  }
+
+  // Instrument button lives in the playback bar — always visible
+  const instrBtn = document.getElementById('bpInstrumentBtn');
+  if (instrBtn) {
+    instrBtn.textContent = instrumentEnabled ? '🎶' : '🔇';
+    instrBtn.title = instrumentEnabled ? 'Flauta activa — clic para silenciar' : 'Flauta silenciada — clic para activar';
+    instrBtn.classList.toggle('active', instrumentEnabled);
+  }
+
+  const iconBtn = document.getElementById('backingIconBtn');
+  if (iconBtn) iconBtn.classList.toggle('active', hasFile && backingEnabled && !backingBpmMismatch());
+
+  const volEl = document.getElementById('backingVol');
+  if (volEl) volEl.value = backingVolume;
+  const volLbl = document.getElementById('backingVolLabel');
+  if (volLbl) volLbl.textContent = Math.round(backingVolume * 100) + '%';
+  const offEl = document.getElementById('backingOffset');
+  if (offEl) offEl.value = backingOffsetSec.toFixed(2);
+}
 function save() { try { upsertCurrentSong(); } catch(e) {} }
-function load() { updateModeUI(); syncSettingsUI(); renderLibrarySongs(); blankWorkspace(); }
+function load() { updateModeUI(); syncSettingsUI(); renderLibrarySongs(); blankWorkspace(); syncBackingUI(); syncInstrumentUI(); }
 
 document.getElementById('song-title').addEventListener('input', () => { save(); });
-document.getElementById('play-from').addEventListener('input', save);
-document.getElementById('play-to').addEventListener('input', save);
-document.getElementById('play-bpm').addEventListener('input', save);
+document.getElementById('play-from').addEventListener('input', () => { clampPlayRange(); save(); });
+document.getElementById('play-to').addEventListener('input',   () => { clampPlayRange(); save(); });
+document.getElementById('play-bpm').addEventListener('input', () => {
+  save();
+  if (backingBuffer && backingEnabled && backingBpmMismatch()) {
+    backingEnabled = false; syncBackingUI();
+    showToast('⚠️ Backing desactivado — tempo cambiado. Original: ' + backingOriginalBpm + ' BPM', 'error');
+  }
+});
 document.getElementById('duration-select').addEventListener('input', applyDurationToSelected);
 document.getElementById('musicxml-input').addEventListener('change', e=>{
   const file=e.target.files&&e.target.files[0]; if(!file) return;
