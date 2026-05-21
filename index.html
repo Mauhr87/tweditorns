@@ -85,6 +85,72 @@ body {
 }
 .toolbar-group:last-child { border-right: none; }
 
+#note-palette {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 45px;
+  margin: -8px 0 12px;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#note-palette::-webkit-scrollbar { height: 5px; }
+#note-palette::-webkit-scrollbar-track { background: #f3f0ea; }
+#note-palette::-webkit-scrollbar-thumb { background: #aaa; border-radius: 3px; }
+.note-palette-label {
+  flex: 0 0 auto;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+.note-palette-track {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.note-palette-btn {
+  flex: 0 0 auto;
+  min-width: 38px;
+  height: 31px;
+  padding: 2px 7px 3px;
+  border: 1px solid #cfcfcf;
+  border-radius: 5px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+.note-palette-btn:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.note-palette-btn.active {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+.note-palette-note {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+}
+.note-palette-oct {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  color: #777;
+}
+.note-palette-btn.active .note-palette-oct { color: #ddd; }
+body[data-mode="play"] #note-palette { display: none; }
+
 .btn {
   padding: 6px 13px;
   border: 1.5px solid #444;
@@ -121,6 +187,29 @@ body {
   background: #f5f3ff;
   border-color: #7c3aed;
   color: #5b21b6;
+}
+.save-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #777;
+  white-space: nowrap;
+}
+.save-status.dirty {
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+.save-status.clean {
+  color: #166534;
+}
+.save-status.unsaved {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
 }
 .btn.library-main {
   background: #7c3aed;
@@ -555,6 +644,10 @@ body[data-mode="edit"] #playback-bar {
   overflow-x: auto;
   overflow-y: hidden;
 }
+#sheet.is-empty {
+  flex-direction: column;
+  align-items: stretch;
+}
 #sheet::-webkit-scrollbar { height: 8px; }
 #sheet::-webkit-scrollbar-track { background: #f3f0ea; }
 #sheet::-webkit-scrollbar-thumb { background: #aaa; border-radius: 4px; }
@@ -785,7 +878,102 @@ body[data-mode="play"] .tab-measure.add-measure {
   min-width: 20px;
   letter-spacing: 0.02em;
 }
+.note-name.editable {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.note-name.editable:hover {
+  background: #eff6ff;
+  color: #1e40af;
+}
 .note-name.unknown { color: #ccc; }
+
+.note-picker {
+  position: fixed;
+  z-index: 9000;
+  width: 258px;
+  background: #fff;
+  border: 1px solid #cfcfcf;
+  border-radius: 7px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  padding: 10px;
+  color: #222;
+  font-family: Georgia, serif;
+}
+.note-picker-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.note-picker-close {
+  border: none;
+  background: transparent;
+  color: #777;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 1px 4px;
+}
+.note-picker-close:hover { color: #111; }
+.note-picker-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+.note-picker-btn {
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  min-width: 29px;
+  height: 28px;
+  padding: 0 7px;
+  font: bold 12px/1 Georgia, serif;
+  cursor: pointer;
+}
+.note-picker-btn:hover:not(:disabled) {
+  border-color: #2563eb;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+.note-picker-btn.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+.note-picker-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.note-picker-octaves {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-height: 28px;
+}
+.note-picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 9px;
+}
+.note-picker-apply {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+.note-picker-status {
+  min-height: 15px;
+  margin-top: 3px;
+  color: #991b1b;
+  font-size: 11px;
+}
 
 /* Holes: 1 col × 6 rows */
 .holes-grid {
@@ -927,7 +1115,9 @@ body[data-mode="play"] .del-space { display: none !important; }
   color: #bbb;
   font-style: italic;
   font-size: 14px;
-  padding: 24px;
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 22px 8px 10px;
   text-align: center;
 }
 
@@ -996,6 +1186,1355 @@ body[data-mode="play"] .del-space { display: none !important; }
 .toast.error { background: #7f1d1d; }
 .toast.ok { background: #064e3b; border: 1px solid #10b981; }
 
+/* ── Professional visual refresh ───────────────────────────────────── */
+:root {
+  color-scheme: light;
+  --bg: #f4f1eb;
+  --surface: #fffdf9;
+  --surface-2: #f8f5ef;
+  --surface-3: #eee8dd;
+  --ink: #211f1b;
+  --muted: #716a5f;
+  --subtle: #a49b8e;
+  --line: #d8d0c3;
+  --line-strong: #b8ad9c;
+  --primary: #0f766e;
+  --primary-strong: #115e59;
+  --blue: #2563eb;
+  --blue-soft: #eef4ff;
+  --violet: #6d28d9;
+  --violet-soft: #f4f0ff;
+  --danger: #b42318;
+  --danger-soft: #fff1f0;
+  --warning: #92400e;
+  --warning-soft: #fff7df;
+  --ok: #166534;
+  --ok-soft: #eaf7ee;
+  --shadow-sm: 0 1px 2px rgba(32, 28, 22, 0.08);
+  --shadow-md: 0 10px 28px rgba(32, 28, 22, 0.12);
+  --focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  --radius: 8px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(244,241,235,0.35) 260px),
+    var(--bg);
+  color: var(--ink);
+}
+
+#app {
+  padding: 14px;
+  gap: 0;
+}
+
+#topbar {
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+#song-title {
+  min-height: 40px;
+  padding: 7px 2px 8px;
+  border-bottom: 2px solid var(--ink);
+  color: var(--ink);
+  font-size: 19px;
+  letter-spacing: 0;
+}
+#song-title:focus {
+  border-bottom-color: var(--primary);
+}
+#song-title::placeholder {
+  color: #b8b0a4;
+}
+
+.top-actions {
+  gap: 7px;
+}
+
+#toolbar,
+#note-palette,
+#score-panel,
+#sheet,
+#playback-bar {
+  box-shadow: var(--shadow-sm);
+}
+
+#toolbar {
+  align-items: center;
+  gap: 0;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.92);
+}
+
+.toolbar-group {
+  min-height: 38px;
+  gap: 7px;
+  padding: 0 12px 0 0;
+  margin-right: 12px;
+  border-right: 1px solid var(--line);
+}
+.toolbar-group:last-child {
+  margin-right: 0;
+}
+.toolbar-group > span,
+.key-selector label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.btn,
+.icon-btn,
+.backing-btn,
+.mode-switch button,
+.duration-btn,
+.note-palette-btn,
+.note-picker-btn,
+.insert-measure button,
+select,
+input {
+  font-family: inherit;
+}
+
+.btn,
+.icon-btn,
+.backing-btn {
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.75) inset;
+  transition: background 0.14s, border-color 0.14s, color 0.14s, box-shadow 0.14s, transform 0.08s;
+}
+.btn {
+  min-height: 33px;
+  padding: 6px 11px;
+  font-size: 13px;
+}
+.btn:hover,
+.icon-btn:hover,
+.backing-btn:hover {
+  border-color: var(--ink);
+  background: #f7f3ea;
+  color: var(--ink);
+}
+.btn:active,
+.icon-btn:active,
+.backing-btn:active,
+.note-palette-btn:active,
+.note-picker-btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled,
+.btn:disabled:hover {
+  border-color: var(--line);
+  background: #f2eee7;
+  color: #aaa197;
+  opacity: 1;
+  cursor: not-allowed;
+}
+.btn.primary,
+.btn.import,
+.btn.play {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+.btn.primary:hover,
+.btn.import:hover,
+.btn.play:hover {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #fff;
+}
+.btn.library-main {
+  border-color: var(--violet);
+  background: var(--violet);
+  color: #fff;
+}
+.btn.library-main:hover {
+  border-color: #4c1d95;
+  background: #4c1d95;
+}
+.btn.danger,
+.top-actions .btn[onclick="hardReset()"] {
+  border-color: #e2aaa5 !important;
+  background: #fff7f6 !important;
+  color: var(--danger) !important;
+}
+.btn.danger:hover,
+.top-actions .btn[onclick="hardReset()"]:hover {
+  border-color: var(--danger) !important;
+  background: var(--danger) !important;
+  color: #fff !important;
+}
+.btn.stop {
+  border-color: #47413a;
+  background: #47413a;
+  color: #fff;
+}
+.btn.stop:hover {
+  border-color: #211f1b;
+  background: #211f1b;
+}
+#settings-btn,
+#fullscreen-btn {
+  width: 39px;
+  height: 34px;
+  font-size: 16px;
+}
+#bpInstrumentBtn,
+#bpInstrumentBtn.active {
+  border-color: #9ec5a7;
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+#bpInstrumentBtn:hover,
+#bpInstrumentBtn.active:hover {
+  border-color: var(--ok);
+  background: #dff0e5;
+  color: var(--ok);
+}
+#bpInstrumentBtn:not(.active) {
+  border-color: var(--line);
+  background: #f2eee7;
+  color: #9a9288;
+}
+
+select,
+.key-selector select,
+.edit-controls select,
+.edit-controls input,
+.playback-controls input,
+.bp-offset-input {
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset;
+}
+select:focus,
+input:focus,
+.key-selector select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: var(--focus);
+}
+
+.mode-switch {
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.mode-switch button {
+  min-width: 52px;
+  padding: 7px 12px;
+  color: var(--muted);
+}
+.mode-switch button.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+.duration-palette {
+  height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.duration-btn {
+  height: 34px;
+  min-width: 34px;
+  border-right: 1px solid var(--line);
+  color: var(--ink);
+}
+.duration-btn:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.duration-btn.active,
+.duration-btn.dot.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+.save-status {
+  min-height: 31px;
+  padding: 0 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.save-status.dirty {
+  border-color: #f1c96a;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.save-status.unsaved {
+  border-color: #b8cdf7;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.save-status.clean {
+  color: var(--ok);
+}
+
+#note-palette {
+  min-height: 48px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.note-palette-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+.note-palette-track {
+  gap: 6px;
+}
+.note-palette-btn {
+  min-width: 42px;
+  height: 33px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+}
+.note-palette-btn:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.note-palette-btn.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+.note-palette-note {
+  font-size: 12px;
+}
+.note-palette-oct {
+  color: #8d8478;
+}
+
+#score-panel,
+#sheet {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+#score-panel {
+  min-height: 166px;
+  margin-bottom: 10px;
+}
+.score-panel-header {
+  min-height: 34px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.score-panel-title {
+  color: var(--ink);
+}
+.score-panel-status {
+  color: var(--muted);
+}
+.score-wrapper {
+  min-height: 128px;
+  background:
+    linear-gradient(90deg, rgba(15,118,110,0.04), transparent 22%, transparent 78%, rgba(109,40,217,0.04));
+}
+.score-msg,
+.empty-msg {
+  color: #a69d91;
+}
+
+#sheet {
+  padding: 16px 16px 10px;
+  background:
+    linear-gradient(#fffdf9, #fffdf9) padding-box,
+    linear-gradient(180deg, rgba(255,255,255,0.9), rgba(232,225,214,0.85)) border-box;
+}
+#sheet::-webkit-scrollbar,
+#note-palette::-webkit-scrollbar,
+.score-wrapper::-webkit-scrollbar {
+  height: 7px;
+}
+#sheet::-webkit-scrollbar-track,
+#note-palette::-webkit-scrollbar-track,
+.score-wrapper::-webkit-scrollbar-track {
+  background: #ebe4d8;
+  border-radius: 999px;
+}
+#sheet::-webkit-scrollbar-thumb,
+#note-palette::-webkit-scrollbar-thumb,
+.score-wrapper::-webkit-scrollbar-thumb {
+  background: #9f968a;
+  border-radius: 999px;
+}
+
+.tab-line {
+  gap: 8px;
+  min-height: 96px;
+}
+.tab-measure {
+  min-height: 112px;
+  padding: 36px 8px 6px;
+  border-right: 1px solid #cfc7ba;
+  border-radius: 0;
+}
+.tab-measure.current-measure {
+  background: rgba(22, 101, 52, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.22);
+}
+.tab-measure.add-measure {
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  background: #fbf8f3;
+}
+.tab-measure.add-measure:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+.measure-number {
+  color: var(--muted);
+  border-radius: 4px;
+}
+.measure-number:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.tab-measure.current-measure .measure-number {
+  color: var(--ok);
+}
+.insert-measure {
+  top: 7px;
+  gap: 3px;
+}
+.insert-measure button {
+  border: 1px dashed #bfc8dc;
+  background: #fff;
+  color: var(--blue);
+}
+.insert-measure button:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.tab-note {
+  padding: 4px;
+  border-radius: 6px;
+}
+.tab-note:hover {
+  background: #f3efe7;
+}
+.tab-note.playing {
+  background: var(--ok-soft);
+  box-shadow: 0 0 0 2px #22c55e inset;
+}
+.tab-note.selected,
+.tab-space.selected {
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 2px var(--blue) inset;
+}
+.note-name {
+  color: var(--blue);
+  letter-spacing: 0;
+}
+.note-name.editable:hover {
+  background: var(--blue-soft);
+  color: #1d4ed8;
+}
+.note-name.unknown {
+  color: #bab2a8;
+}
+.hole {
+  border-color: #1f2933;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset;
+}
+.hole.filled {
+  background: #111827;
+}
+.hole:hover {
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+.octave-btn {
+  color: #c8c1b7;
+}
+.octave-btn.on {
+  color: var(--ink);
+}
+.octave-btn:hover {
+  background: #f3efe7;
+  color: var(--blue);
+}
+
+.tab-space {
+  border-radius: 6px;
+}
+.tab-space.rest {
+  border-color: #ded7cc;
+  background: #fbfaf7;
+  color: #9b9287;
+}
+.tab-space.rest:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.tab-space.selected {
+  color: var(--blue);
+}
+.tab-space-x {
+  opacity: 0.42;
+}
+
+.del-note,
+.del-space {
+  background: var(--danger);
+  box-shadow: 0 2px 8px rgba(180,35,24,0.24);
+}
+
+.note-picker {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.note-picker-title {
+  color: var(--ink);
+}
+.note-picker-close:hover {
+  color: var(--danger);
+}
+.note-picker-btn {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+.note-picker-btn:hover:not(:disabled) {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.note-picker-btn.active {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+.note-picker-apply {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+.note-picker-status {
+  color: var(--danger);
+}
+
+.panel-overlay {
+  background: rgba(33,31,27,0.28);
+}
+.side-panel {
+  background: var(--surface);
+}
+#library-panel,
+#settings-panel {
+  border-color: var(--line);
+  box-shadow: 0 20px 60px rgba(33,31,27,0.2);
+}
+.side-panel-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.side-panel-title {
+  color: var(--ink);
+}
+.side-panel-body {
+  background: #fbf8f3;
+}
+.library-item,
+.setting-row {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.library-item:hover {
+  border-color: var(--line-strong);
+  background: #fff;
+}
+.library-item.active {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+}
+.library-title,
+.setting-name {
+  color: var(--ink);
+}
+.library-meta,
+.setting-desc,
+.library-empty {
+  color: var(--muted);
+}
+.settings-section {
+  border-bottom-color: var(--line);
+}
+.settings-section-title {
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.icon-btn {
+  border-color: var(--line-strong);
+  border-radius: 6px;
+}
+.icon-btn:hover {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  color: var(--violet);
+}
+
+.toggle-slider {
+  border: 1px solid #bdb4a8;
+  background: #d8d0c3;
+}
+.toggle-switch input:checked + .toggle-slider {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+#playback-bar {
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255,253,249,0.9);
+  box-shadow: 0 -1px 16px rgba(33,31,27,0.08);
+}
+.playback-label {
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+body[data-mode="edit"] #playback-bar {
+  opacity: 0.52;
+  filter: saturate(0.75);
+}
+
+.backing-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.backing-panel-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.backing-panel-close:hover {
+  color: var(--danger);
+}
+.bp-divider {
+  background: var(--line);
+}
+.bp-label,
+.bp-file-name,
+.bp-range-val {
+  color: var(--muted);
+}
+.bp-range {
+  accent-color: var(--primary);
+}
+
+.toast {
+  border-radius: var(--radius);
+  background: var(--ink);
+  box-shadow: var(--shadow-md);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.toast.error {
+  background: #8f1f17;
+}
+.toast.ok {
+  background: #0f5132;
+  border-color: #33b37b;
+}
+
+@media (max-width: 900px) {
+  #app {
+    padding: 10px;
+  }
+  #toolbar {
+    align-items: stretch;
+  }
+  .toolbar-group {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 8px;
+  }
+  #note-palette {
+    min-height: 50px;
+  }
+}
+
+/* ── Modern responsive redesign v2 ─────────────────────────────────── */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --surface-2: #f7f9fb;
+  --surface-3: #e9edf2;
+  --ink: #17181c;
+  --muted: #5c6470;
+  --subtle: #9aa3af;
+  --line: #d8dee7;
+  --line-strong: #b8c2cf;
+  --primary: #0d9488;
+  --primary-strong: #0f766e;
+  --blue: #2563eb;
+  --blue-soft: #edf4ff;
+  --violet: #7c3aed;
+  --violet-soft: #f4f0ff;
+  --danger: #dc2626;
+  --danger-soft: #fff1f2;
+  --warning: #b45309;
+  --warning-soft: #fff7ed;
+  --ok: #15803d;
+  --ok-soft: #ecfdf3;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 12px 34px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 24px 70px rgba(15, 23, 42, 0.18);
+  --focus: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  --radius: 12px;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(180deg, #f8fafc 0, #eef1f4 280px, #e8ecef 100%);
+  color: var(--ink);
+}
+
+#app {
+  padding: 16px;
+  gap: 10px;
+}
+
+#topbar {
+  min-height: 60px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #22262e;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, #17181c 0%, #222733 60%, #17413d 100%);
+  box-shadow: var(--shadow-md);
+}
+
+#song-title {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 800;
+}
+#song-title:focus {
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.25);
+}
+#song-title::placeholder {
+  color: rgba(255,255,255,0.56);
+  font-style: normal;
+}
+
+.top-actions {
+  gap: 8px;
+}
+.top-actions .btn,
+#settings-btn,
+#fullscreen-btn {
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  box-shadow: none;
+}
+.top-actions .btn:hover,
+#settings-btn:hover,
+#fullscreen-btn:hover {
+  border-color: rgba(255,255,255,0.42);
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+}
+.top-actions .btn.import,
+.top-actions .btn.primary {
+  border-color: transparent;
+  background: var(--primary);
+}
+.top-actions .btn.import:hover,
+.top-actions .btn.primary:hover {
+  background: var(--primary-strong);
+}
+.top-actions .btn.library-main {
+  border-color: transparent;
+  background: var(--violet);
+}
+.top-actions .btn.library-main:hover {
+  background: #5b21b6;
+}
+.top-actions .btn[onclick="hardReset()"] {
+  border-color: rgba(248, 113, 113, 0.38) !important;
+  background: rgba(248, 113, 113, 0.14) !important;
+  color: #fecaca !important;
+}
+
+#toolbar {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.92);
+  box-shadow: var(--shadow-sm);
+}
+.toolbar-group {
+  min-height: 40px;
+  padding: 5px 12px 5px 0;
+  margin-right: 12px;
+  border-right: 1px solid var(--line);
+}
+.toolbar-group > span,
+.key-selector label,
+.playback-label {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.btn,
+.icon-btn,
+.backing-btn,
+.mode-switch button,
+.duration-btn,
+.note-palette-btn,
+.note-picker-btn,
+.insert-measure button,
+select,
+input {
+  font-family: inherit;
+}
+
+.btn,
+.icon-btn,
+.backing-btn {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover,
+.icon-btn:hover,
+.backing-btn:hover {
+  border-color: var(--line-strong);
+  background: #f8fafc;
+  color: var(--ink);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.08);
+}
+.btn.primary,
+.btn.import,
+.btn.play {
+  border-color: transparent;
+  background: var(--primary);
+  color: #fff;
+}
+.btn.primary:hover,
+.btn.import:hover,
+.btn.play:hover {
+  background: var(--primary-strong);
+  color: #fff;
+}
+.btn.library-main {
+  border-color: transparent;
+  background: var(--violet);
+  color: #fff;
+}
+.btn.library-main:hover {
+  background: #5b21b6;
+  color: #fff;
+}
+.btn.danger {
+  border-color: #fecdd3;
+  background: #fff;
+  color: var(--danger);
+}
+.btn.danger:hover {
+  border-color: transparent;
+  background: var(--danger);
+  color: #fff;
+}
+.btn:disabled,
+.btn:disabled:hover {
+  border-color: var(--line);
+  background: #edf1f5;
+  color: #9aa3af;
+  box-shadow: none;
+}
+#settings-btn,
+#fullscreen-btn {
+  width: 38px;
+  min-width: 38px;
+}
+
+select,
+.key-selector select,
+.edit-controls select,
+.edit-controls input,
+.playback-controls input,
+.bp-offset-input {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.mode-switch {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #edf1f5;
+  padding: 3px;
+  gap: 3px;
+}
+.mode-switch button {
+  min-width: 58px;
+  border-radius: 8px;
+  border-right: 0;
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+.mode-switch button.active {
+  background: #17181c;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.duration-palette {
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #edf1f5;
+  padding: 3px;
+  gap: 3px;
+}
+.duration-btn {
+  height: 30px;
+  min-width: 34px;
+  border-right: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+.duration-btn:hover {
+  background: #fff;
+  color: var(--blue);
+}
+.duration-btn.active,
+.duration-btn.dot.active {
+  background: #17181c;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.save-status {
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+#note-palette {
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: var(--shadow-sm);
+}
+.note-palette-btn {
+  min-width: 44px;
+  height: 36px;
+  border-color: var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  box-shadow: none;
+}
+.note-palette-btn:hover {
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(37,99,235,0.12);
+}
+.note-palette-btn.active {
+  border-color: transparent;
+  background: var(--blue);
+}
+.note-palette-note {
+  font-family: ui-serif, Georgia, serif;
+  font-size: 13px;
+}
+.note-palette-oct {
+  font-family: inherit;
+  font-size: 9px;
+}
+
+#score-panel,
+#sheet {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+#score-panel {
+  min-height: 164px;
+  margin: 0;
+  overflow: hidden;
+}
+.score-panel-header {
+  min-height: 38px;
+  background: #f8fafc;
+}
+.score-panel-title {
+  font-weight: 900;
+}
+.score-wrapper {
+  background:
+    linear-gradient(90deg, rgba(13,148,136,0.06), transparent 30%, transparent 70%, rgba(124,58,237,0.05));
+}
+
+#sheet {
+  padding: 18px 18px 12px;
+  background: #fff;
+  overflow-x: auto;
+}
+.tab-line {
+  gap: 10px;
+  min-height: 104px;
+}
+.tab-measure {
+  min-width: 118px;
+  min-height: 120px;
+  padding: 38px 9px 8px;
+  border-right: 1px solid #cfd7e3;
+}
+.tab-measure.current-measure {
+  background: rgba(13,148,136,0.08);
+  box-shadow: inset 0 0 0 1px rgba(13,148,136,0.22);
+}
+.tab-note,
+.tab-space {
+  border-radius: 10px;
+}
+.tab-note:hover {
+  background: #f1f5f9;
+}
+.tab-note.selected,
+.tab-space.selected {
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 2px var(--blue) inset;
+}
+.note-name {
+  font-family: ui-serif, Georgia, serif;
+  color: var(--blue);
+}
+.hole {
+  border-color: #0f172a;
+}
+.hole.filled {
+  background: #0f172a;
+}
+.tab-space.rest {
+  border-color: #d6dee9;
+  background: #f8fafc;
+}
+
+#playback-bar {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid #242832;
+  border-radius: 16px;
+  background: #17181c;
+  color: #dbe4ef;
+  box-shadow: var(--shadow-md);
+}
+#playback-bar .playback-label,
+#playback-bar span {
+  color: #c8d1dc;
+}
+#playback-bar input {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+#playback-bar .btn:not(.play):not(.stop),
+#playback-bar .icon-btn,
+#playback-bar #backingIconBtn {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+#playback-bar .btn.stop {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.12);
+}
+body[data-mode="edit"] #playback-bar {
+  opacity: 0.78;
+  filter: none;
+}
+
+.side-panel {
+  background: #fff;
+}
+.side-panel-header {
+  background: #17181c;
+  color: #fff;
+}
+.side-panel-title {
+  color: #fff;
+  font-family: inherit;
+}
+.side-panel-header .icon-btn {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.side-panel-body {
+  background: #f3f6f9;
+}
+.library-item,
+.setting-row {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.library-item.active {
+  border-color: var(--violet);
+  background: #f7f2ff;
+}
+
+.note-picker,
+.backing-panel {
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+.note-picker-btn {
+  border-radius: 10px;
+}
+.note-picker-apply {
+  border-color: transparent;
+  background: var(--primary);
+}
+.backing-panel-header {
+  background: #17181c;
+  color: #fff;
+}
+.backing-panel-close {
+  color: rgba(255,255,255,0.72);
+}
+
+@media (max-width: 1100px) {
+  #topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .top-actions {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+  .top-actions .btn {
+    flex: 0 0 auto;
+  }
+  #toolbar {
+    align-items: stretch;
+  }
+  .toolbar-group {
+    border-right: 0;
+  }
+  .edit-controls {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    overflow: hidden;
+  }
+  #app {
+    height: 100dvh;
+    padding: 8px;
+    gap: 8px;
+  }
+  #topbar {
+    min-height: 0;
+    padding: 8px;
+    border-radius: 14px;
+  }
+  #song-title {
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+    font-size: 17px;
+  }
+  .top-actions {
+    gap: 6px;
+  }
+  .top-actions .btn {
+    min-height: 34px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  #settings-btn,
+  #fullscreen-btn {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+  }
+  #toolbar {
+    max-height: 154px;
+    overflow-y: auto;
+    padding: 8px;
+    border-radius: 14px;
+  }
+  .toolbar-group {
+    min-height: 34px;
+    margin-right: 6px;
+    padding: 3px 0;
+  }
+  .mode-switch button {
+    min-width: 50px;
+    padding: 6px 9px;
+  }
+  .key-selector select,
+  .edit-controls select,
+  .edit-controls input {
+    min-height: 34px;
+  }
+  .duration-palette {
+    height: 34px;
+  }
+  .duration-btn {
+    height: 26px;
+    min-width: 31px;
+  }
+  .btn {
+    min-height: 34px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  #note-palette {
+    min-height: 44px;
+    padding: 7px 8px;
+    border-radius: 14px;
+  }
+  .note-palette-label {
+    display: none;
+  }
+  .note-palette-btn {
+    min-width: 40px;
+    height: 32px;
+  }
+  #score-panel {
+    min-height: 118px;
+  }
+  .score-panel-header {
+    min-height: 32px;
+    padding: 7px 10px;
+  }
+  .score-wrapper {
+    min-height: 84px;
+    padding: 6px 8px;
+  }
+  #score-svg svg {
+    height: 96px !important;
+  }
+  #sheet {
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .tab-line {
+    min-height: 96px;
+  }
+  .tab-measure {
+    min-width: 104px;
+    min-height: 108px;
+    padding: 34px 7px 7px;
+  }
+  #playback-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 9px;
+    border-radius: 14px;
+  }
+  .playback-section,
+  .playback-section.center,
+  .playback-section.right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .side-panel,
+  #library-panel,
+  #settings-panel {
+    width: 100vw;
+    max-width: 100vw;
+  }
+  .backing-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 82px;
+    width: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  #toolbar {
+    max-height: 176px;
+  }
+  .toolbar-group > span,
+  .key-selector label {
+    font-size: 10px;
+  }
+  .btn {
+    padding-inline: 8px;
+  }
+  .note-palette-btn {
+    min-width: 38px;
+  }
+  .note-palette-note {
+    font-size: 12px;
+  }
+  .note-palette-oct {
+    font-size: 8px;
+  }
+}
+
 /* ---- Print ---- */
 @media print {
   @page { size: letter; margin: 12mm 10mm; }
@@ -1010,6 +2549,7 @@ body[data-mode="play"] .del-space { display: none !important; }
 
   /* Hide everything by default */
   #toolbar,
+  #note-palette,
   #score-panel,
   .playback-controls,
   .mode-control,
@@ -1107,9 +2647,13 @@ body[data-mode="play"] .del-space { display: none !important; }
       <button class="btn" onclick="newTablature()" title="Nueva tablatura">＋ Nuevo</button>
       <button class="btn import" onclick="document.getElementById('musicxml-input').click()">⇪ Cargar MusicXML</button>
       <input type="file" id="musicxml-input" accept=".xml,.musicxml,application/vnd.recordare.musicxml+xml,text/xml,application/xml" hidden>
+      <button class="btn primary" id="save-btn" onclick="saveCurrentSong()" title="Guardar en biblioteca">💾 Guardar</button>
+      <button class="btn" id="save-copy-btn" onclick="saveCurrentSongCopy()" title="Guardar como copia">⧉ Copia</button>
+      <span class="save-status clean" id="save-status"></span>
       <button class="btn library-main" id="library-btn" onclick="toggleLibraryPanel()" title="Biblioteca">📚 Biblioteca <span id="library-count" style="display:none">0</span></button>
       <button class="btn" id="settings-btn" onclick="toggleSettingsPanel()" title="Configuración">⚙</button>
       <button class="btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
+      <button class="btn" onclick="hardReset()" title="Borrar datos y reiniciar" style="background:#fee2e2;color:#991b1b;border-color:#fca5a5;font-size:11px;">↺ Reset</button>
     </div>
   </div>
 
@@ -1126,6 +2670,7 @@ body[data-mode="play"] .del-space { display: none !important; }
       <select id="instrument-select" onchange="changeInstrument(this.value)">
         <option value="whistle" selected>Tin Whistle</option>
         <option value="recorder">Flauta Dulce</option>
+        <option value="ocarina">Ocarina</option>
       </select>
     </div>
     <div class="toolbar-group key-selector" id="whistle-key-group">
@@ -1199,6 +2744,8 @@ body[data-mode="play"] .del-space { display: none !important; }
       <button class="btn danger" onclick="clearAll()">✕ Limpiar todo</button>
     </div>
   </div>
+
+  <div id="note-palette" aria-label="Paleta de notas"></div>
 
   <div class="panel-overlay" id="panel-overlay" onclick="closePanels()"></div>
   <div class="side-panel" id="library-panel">
@@ -1375,6 +2922,36 @@ body[data-mode="play"] .del-space { display: none !important; }
 
 // ── State ──────────────────────────────────────────────────────────
 let measures = [];          // [{id, beats, slots:[{type,holes,octave,duration,eventId}]}]
+const OCARINA_FINGERINGS = [
+  [1,1,1,1,1,1,1,1,1,1,1,1], // 0  A  grave MIDI 57
+  [1,1,1,1,1,1,1,1,1,0,1,1], // 1  A# grave MIDI 58
+  [1,1,1,1,0,1,1,1,1,1,1,1], // 2  B  grave MIDI 59
+  [1,1,1,1,0,1,1,1,1,0,1,1], // 3  C  media MIDI 60
+  [1,1,1,1,0,1,1,1,0,1,1,1], // 4  C# media MIDI 61
+  [1,1,1,1,0,1,1,1,0,0,1,1], // 5  D  media MIDI 62
+  [1,1,1,1,0,1,1,0,1,0,1,1], // 6  D# media MIDI 63
+  [1,1,1,1,0,1,1,0,0,0,1,1], // 7  E  media MIDI 64
+  [1,1,1,1,0,1,0,0,0,0,1,1], // 8  F  media MIDI 65
+  [1,1,1,1,0,0,0,1,0,0,1,1], // 9  F# media MIDI 66
+  [1,1,1,1,0,0,0,0,0,0,1,1], // 10 G  media MIDI 67
+  [1,1,0,1,0,0,0,1,0,0,1,1], // 11 G# media MIDI 68
+  [1,1,0,1,0,0,0,0,0,0,1,1], // 12 A  media MIDI 69
+  [1,0,0,1,0,0,0,1,0,0,1,1], // 13 A# media MIDI 70
+  [1,0,0,1,0,0,0,0,0,0,1,1], // 14 B  media MIDI 71
+  [0,0,0,1,0,0,0,0,0,0,1,1], // 15 C  aguda MIDI 72
+  [0,0,0,1,0,0,0,1,0,0,0,1], // 16 C# aguda MIDI 73
+  [0,0,0,1,0,0,0,0,0,0,0,1], // 17 D  aguda MIDI 74
+  [0,0,0,1,0,0,0,1,0,0,0,0], // 18 D# aguda MIDI 75
+  [0,0,0,1,0,0,0,0,0,0,0,0], // 19 E  aguda MIDI 76
+  [0,0,0,0,0,0,0,0,0,0,0,0], // 20 F  aguda MIDI 77
+];
+const OCARINA_ROOT_MIDI = 57; // A3
+const OCARINA_FINGERING_OFFSETS = {};
+OCARINA_FINGERINGS.forEach((h,i) => {
+  const key = h.join('');
+  if (!(key in OCARINA_FINGERING_OFFSETS)) OCARINA_FINGERING_OFFSETS[key] = i;
+});
+
 let whistleKey = 'D';
 let currentInstrument = 'whistle'; // 'whistle' | 'recorder'
 let recorderStyle = 'baroque';     // 'baroque' | 'german'
@@ -1390,10 +2967,20 @@ let isPlaying = false;
 let audioCtx = null;
 let playbackTimers = [];
 let activeOscillators = [];
+const TONE_JS_CDNS = [
+  'https://cdn.jsdelivr.net/npm/tone@15.1.22/build/Tone.js',
+  'https://unpkg.com/tone@15.1.22/build/Tone.js'
+];
+let toneLoadPromise = null;
+let toneUnavailable = false;
+let toneEffects = null;
+let toneInstruments = {};
 let currentSongId = null;
 let currentSongType = null;
 let currentSourceId = null;
+let hasUnsavedChanges = false;
 let nextEventId = 0;
+const TAB_MODEL_VERSION = 6;
 // selectedRef: { mIdx (index into measures), sIdx (index into slots) }
 let selectedRef = null;
 let vrvToolkit = null;
@@ -1414,19 +3001,26 @@ let _cachedPerRow = 0;
 function getMeasuresPerRow() { return 9999; } // unused — rows driven by lineBreakBefore
 function invalidateRowCache() { _cachedPerRow = 0; }
 const HOLE_ORDER = [0,1,2,3,4,5];
-function getHoleCount()       { return currentInstrument === 'recorder' ? 8 : 6; }
-function emptyHoles()         { return currentInstrument==='recorder' ? Array(8).fill(true) : Array(6).fill(false); }
+function getHoleCount()       { return currentInstrument === 'recorder' ? 8 : currentInstrument === 'ocarina' ? 12 : 6; }
+function emptyHoles()         { return currentInstrument==='recorder' ? Array(8).fill(true) : currentInstrument==='ocarina' ? Array(12).fill(true) : Array(6).fill(false); }
 function getFingeringOffsets(octave) {
   if (currentInstrument === 'recorder') {
     if (octave) return recorderStyle === 'german' ? RECORDER_GERMAN_FINGERING_OFFSETS_OCT2 : RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2;
     return recorderStyle === 'german' ? RECORDER_GERMAN_FINGERING_OFFSETS : RECORDER_BAROQUE_FINGERING_OFFSETS;
   }
+  if (currentInstrument === 'ocarina') return OCARINA_FINGERING_OFFSETS;
   return FINGERING_OFFSETS;
 }
 function getOffsetFingerings(octave) {
   if (currentInstrument === 'recorder') {
     if (octave) return recorderStyle === 'german' ? RECORDER_GERMAN_OFFSET_FINGERINGS_OCT2 : RECORDER_BAROQUE_OFFSET_FINGERINGS_OCT2;
     return recorderStyle === 'german' ? RECORDER_GERMAN_OFFSET_FINGERINGS : RECORDER_BAROQUE_OFFSET_FINGERINGS;
+  }
+  if (currentInstrument === 'ocarina') {
+    // Para ocarina: map offset→holes string
+    const map = {};
+    OCARINA_FINGERINGS.forEach((h,i) => { map[i] = h.join(''); });
+    return map;
   }
   return OFFSET_FINGERINGS;
 }
@@ -1501,15 +3095,32 @@ const RECORDER_GERMAN_OFFSET_FINGERINGS_OCT2 = { ...RECORDER_BAROQUE_OFFSET_FING
 const RECORDER_GERMAN_FINGERING_OFFSETS_OCT2 = { ...RECORDER_BAROQUE_FINGERING_OFFSETS_OCT2 };
 
 
-// Migrar/reparar slots de flauta dulce usando transposedMidi como fuente de verdad
+// Migrar/reparar slots usando el MIDI base como fuente de verdad
 function migrateRecorderSlots(measuresList) {
+  if (currentInstrument === 'ocarina') {
+    measuresList.forEach(m => m.slots.forEach(slot => {
+      if (slot.type !== 'note') return;
+      const source = canonicalizeSlotSourceMidi(slot);
+      const midi = source == null ? null : visibleMidiFromSourceMidi(source);
+      if (midi != null && Number.isFinite(midi)) {
+        const deg = midi - OCARINA_ROOT_MIDI;
+        if (deg >= 0 && deg < OCARINA_FINGERINGS.length) {
+          slot.degree = deg;
+          slot.holes = [...OCARINA_FINGERINGS[deg]];
+        }
+      }
+    }));
+    return;
+  }
   if (currentInstrument !== 'recorder') return;
   measuresList.forEach(m => m.slots.forEach(slot => {
     if (slot.type !== 'note') return;
-    // Derivar degree desde transposedMidi (fuente de verdad absoluta, sin ambigüedad)
-    if (slot.transposedMidi != null && Number.isFinite(slot.transposedMidi)) {
+    // Derivar degree desde el pitch visible del instrumento actual.
+    const source = canonicalizeSlotSourceMidi(slot);
+    const midi = source == null ? null : visibleMidiFromSourceMidi(source);
+    if (midi != null && Number.isFinite(midi)) {
       const rootMidi = 60;
-      let pm = slot.transposedMidi;
+      let pm = midi;
       while (pm < rootMidi) pm += 12;
       while (pm >= rootMidi + 24) pm -= 12;
       slot.octave = pm >= rootMidi + 12;
@@ -1562,6 +3173,26 @@ function applyRecorderFingering(slot, fingering, isOct2) {
   return slot;
 }
 
+function recorderDegreeFromSlot(slot, opts={}) {
+  if (!slot || (slot.type && slot.type !== 'note')) return null;
+  const explicit = Number(slot.degree);
+  if (!opts.ignoreExplicit && Number.isFinite(explicit)) return ((explicit % 12) + 12) % 12;
+  const holes = slot.holes || [];
+  const baseKey = holes.map(x=>x?'1':'0').join('');
+  if (!baseKey) return null;
+  const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
+  const h6r = slot.h6r !== undefined ? slot.h6r : Boolean(holes[6]);
+  const h7r = slot.h7r !== undefined ? slot.h7r : Boolean(holes[7]);
+  for (const [off, entry] of Object.entries(table)) {
+    const [s, th6r, th7r] = entry;
+    if (s === baseKey && th6r === h6r && th7r === h7r) return parseInt(off);
+  }
+  for (const [off, entry] of Object.entries(table)) {
+    if (entry[0] === baseKey) return parseInt(off);
+  }
+  return null;
+}
+
 
 const FINGERING_OFFSETS = {
   '111111':0,'111101':1,'111110':2,'111010':3,'111100':4,'111000':5,
@@ -1595,6 +3226,17 @@ function getNoteName(holes, octave, slot) {
     const name = NOTES_SHARP[semiIdx];
     return octave ? name + "'" : name;
   }
+  if (currentInstrument === 'ocarina') {
+    const deg = (slot && slot.degree != null) ? slot.degree : OCARINA_FINGERING_OFFSETS[key];
+    if (deg === undefined || deg === null) return '';
+    // Nombre de nota: A3=La grave, luego C4 en adelante
+    const midiNote = OCARINA_ROOT_MIDI + deg;
+    const semiIdx = ((midiNote % 12) + 12) % 12;
+    const octNum = Math.floor(midiNote / 12) - 1;
+    const name = NOTES_SHARP[semiIdx];
+    // Indicar octavas reales: grave con coma, alta con apostrofe.
+    return octNum <= 3 ? name + ',' : octNum >= 5 ? name + "'" : name;
+  }
   const foMap = getFingeringOffsets(octave);
   let offset = foMap[key];
   if (offset === undefined) return '';
@@ -1608,17 +3250,20 @@ function getNoteName(holes, octave, slot) {
 function holesFromFingering(key) { return key.split('').map(v => v==='1'); }
 
 function midiFromTabSlot(slot) {
+  if (currentInstrument === 'ocarina') {
+    const deg = slot.degree ?? OCARINA_FINGERING_OFFSETS[(slot.holes||[]).map(h=>h?'1':'0').join('')];
+    if (deg === undefined || deg === null) return null;
+    return OCARINA_ROOT_MIDI + deg;
+  }
+  if (currentInstrument === 'recorder') {
+    const degree = recorderDegreeFromSlot(slot);
+    if (degree === undefined || degree === null) return null;
+    return 60 + degree + (slot.octave ? 12 : 0);
+  }
   const key = slot.holes?.map(h=>h?'1':'0').join('');
   const foMap = getFingeringOffsets(slot.octave);
   let offset = foMap[key];
-  // Fallback a 1ª octava si no encuentra en el mapa de 2ª octava
-  if (offset === undefined && currentInstrument === 'recorder' && slot.octave) {
-    offset = getFingeringOffsets(false)[key];
-  }
   if (offset === undefined) return null;
-  if (currentInstrument === 'recorder') {
-    return 60 + offset + (slot.octave ? 12 : 0);
-  }
   const rootPc = KEY_ROOT[whistleKey] ?? 2;
   return 60 + rootPc + offset + (slot.octave ? 12 : 0);
 }
@@ -1633,9 +3278,19 @@ function noteFromMidiForWhistle(midi) {
     const ofMap = getOffsetFingerings(isOct2);
     const fingering = ofMap[offset];
     if (!fingering) return null;
-    const slot = { holes: [], octave: false, thumbState: 'open', h6r: false, h7r: false };
+    const slot = { holes: [], octave: false, thumbState: 'open', h6r: false, h7r: false, degree: offset };
     applyRecorderFingering(slot, fingering, isOct2);
-    return { ...slot, transposedMidi: pm };
+    return { ...slot, degree: offset, transposedMidi: pm };
+  }
+  if (currentInstrument === 'ocarina') {
+    // Ocarina: rango A3(57) a F5(77), offset 0..20
+    let pm = midi;
+    while (pm < OCARINA_ROOT_MIDI) pm += 12;
+    while (pm > OCARINA_ROOT_MIDI + 20) pm -= 12;
+    const offset = pm - OCARINA_ROOT_MIDI;
+    if (offset < 0 || offset >= OCARINA_FINGERINGS.length) return null;
+    const holes = [...OCARINA_FINGERINGS[offset]];
+    return { holes, octave: false, degree: offset, transposedMidi: pm };
   }
   const rootPc = KEY_ROOT[whistleKey] ?? 2;
   const rootMidi = 60 + rootPc;
@@ -1646,6 +3301,357 @@ function noteFromMidiForWhistle(midi) {
   const fingering = OFFSET_FINGERINGS[offset];
   if (!fingering) return null;
   return { holes: holesFromFingering(fingering), octave: pm >= rootMidi + 12, transposedMidi: pm };
+}
+function playableMidiCandidatesForCurrentInstrument() {
+  if (currentInstrument === 'ocarina') {
+    return OCARINA_FINGERINGS.map((_, i) => OCARINA_ROOT_MIDI + i);
+  }
+  if (currentInstrument === 'recorder') {
+    const mids = [];
+    Object.keys(REC_FING_OCT1).forEach(off => mids.push(60 + Number(off)));
+    Object.keys(REC_FING_OCT2).forEach(off => mids.push(72 + Number(off)));
+    return Array.from(new Set(mids)).sort((a,b)=>a-b);
+  }
+  const rootMidi = 60 + (KEY_ROOT[whistleKey] ?? 2);
+  const offsets = Object.keys(OFFSET_FINGERINGS).map(Number);
+  return offsets.flatMap(off => [rootMidi + off, rootMidi + 12 + off]).sort((a,b)=>a-b);
+}
+function parseNoteText(value) {
+  const raw = String(value || '').trim()
+    .replaceAll('♯','#')
+    .replaceAll('♭','b')
+    .replace(/\s+/g,'');
+  const match = raw.match(/^([A-Ga-g])([#b]?)([,']?)(-?\d+)?$/)
+    || raw.match(/^([A-Ga-g])([#b]?)(-?\d+)([,']?)$/);
+  if (!match) return null;
+  const step = match[1].toUpperCase();
+  const accidental = match[2] || '';
+  const marker = (match[3] && /[,']/.test(match[3])) ? match[3] : (match[4] && /[,']/.test(match[4]) ? match[4] : '');
+  const octaveText = (match[3] && /^-?\d+$/.test(match[3])) ? match[3] : (match[4] && /^-?\d+$/.test(match[4]) ? match[4] : '');
+  const noteName = step + accidental;
+  const pc = NOTE_NAMES_FLAT_OR_SHARP[noteName];
+  if (pc === undefined) return null;
+  return { pc, noteName, marker, octave: octaveText === '' ? null : Number(octaveText) };
+}
+function octaveBandForMidi(midi) {
+  if (currentInstrument === 'whistle') {
+    const rootMidi = 60 + (KEY_ROOT[whistleKey] ?? 2);
+    return midi >= rootMidi + 12 ? 'high' : 'normal';
+  }
+  if (currentInstrument === 'recorder') return midi >= 72 ? 'high' : 'normal';
+  const oct = Math.floor(midi / 12) - 1;
+  return oct <= 3 ? 'low' : oct >= 5 ? 'high' : 'normal';
+}
+function rangeLabelForCurrentInstrument() {
+  const candidates = playableMidiCandidatesForCurrentInstrument();
+  const first = pitchFromMidi(candidates[0]);
+  const last = pitchFromMidi(candidates[candidates.length - 1]);
+  function label(p) {
+    const accidental = p.alter === 1 ? '#' : p.alter === -1 ? 'b' : '';
+    return `${p.step}${accidental}${p.octave}`;
+  }
+  return `${label(first)}-${label(last)}`;
+}
+function chooseMidiForNoteText(text, slot) {
+  const parsed = parseNoteText(text);
+  if (!parsed) return { error: "Escribe una nota como C, F#, Bb, C', A, o C4." };
+  let candidates = playableMidiCandidatesForCurrentInstrument()
+    .filter(midi => ((midi % 12) + 12) % 12 === parsed.pc);
+  if (parsed.octave != null) {
+    const exact = (parsed.octave + 1) * 12 + parsed.pc;
+    candidates = candidates.filter(midi => midi === exact);
+  } else if (parsed.marker === "'") {
+    candidates = candidates.filter(midi => octaveBandForMidi(midi) === 'high');
+  } else if (parsed.marker === ',') {
+    candidates = candidates.filter(midi => octaveBandForMidi(midi) === 'low');
+  }
+  if (!candidates.length) {
+    return { error: `Esa nota no está en el rango de este instrumento (${rangeLabelForCurrentInstrument()}).` };
+  }
+  const currentMidi = finiteMidiValue(midiFromTabSlot(slot));
+  const chosen = currentMidi == null
+    ? candidates[0]
+    : candidates.slice().sort((a,b)=>Math.abs(a-currentMidi)-Math.abs(b-currentMidi) || a-b)[0];
+  return { midi: chosen };
+}
+let notePickerState = null;
+function noteNameForPickerMidi(midi, noteName) {
+  const octave = Math.floor(midi / 12) - 1;
+  return `${noteName}${octave}`;
+}
+function pickerCandidatesForState() {
+  if (!notePickerState) return [];
+  const noteName = notePickerState.note + notePickerState.accidental;
+  const pc = NOTE_NAMES_FLAT_OR_SHARP[noteName];
+  if (pc === undefined) return [];
+  return playableMidiCandidatesForCurrentInstrument()
+    .filter(midi => ((midi % 12) + 12) % 12 === pc);
+}
+function pickNearestMidi(candidates, slot) {
+  if (!candidates.length) return null;
+  const currentMidi = finiteMidiValue(midiFromTabSlot(slot));
+  if (currentMidi == null) return candidates[0];
+  return candidates.slice().sort((a,b)=>Math.abs(a-currentMidi)-Math.abs(b-currentMidi) || a-b)[0];
+}
+function closeNotePicker() {
+  if (!notePickerState) return;
+  document.removeEventListener('mousedown', notePickerState.outsideHandler, true);
+  document.removeEventListener('keydown', notePickerState.keyHandler, true);
+  notePickerState.el?.remove();
+  notePickerState = null;
+}
+function positionNotePicker(anchorEl) {
+  if (!notePickerState?.el || !anchorEl) return;
+  const picker = notePickerState.el;
+  const rect = anchorEl.getBoundingClientRect();
+  const width = picker.offsetWidth || 258;
+  const height = picker.offsetHeight || 160;
+  let left = rect.left + rect.width / 2 - width / 2;
+  let top = rect.bottom + 7;
+  left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+  if (top + height > window.innerHeight - 8) top = rect.top - height - 7;
+  top = Math.max(8, top);
+  picker.style.left = `${left}px`;
+  picker.style.top = `${top}px`;
+}
+function applyMidiToSlot(mIdx, sIdx, midi) {
+  const slot = measures[mIdx]?.slots[sIdx];
+  if (!slot || slot.type !== 'note') return;
+  if (!noteFromMidiForWhistle(midi)) { setImportStatus('No hay digitación para esa nota en este instrumento.', 'error'); return; }
+  pushUndoSnapshot();
+  ensureEditableRecord();
+  setNoteSlotToMidi(slot, midi);
+  afterMutation();
+}
+function setNoteSlotToMidi(slot, midi) {
+  const info = noteFromMidiForWhistle(midi);
+  if (!slot || !info) return false;
+  slot.type = 'note';
+  slot.holes = Array.isArray(info.holes) ? [...info.holes] : emptyHoles();
+  slot.octave = info.octave ?? false;
+  slot.degree = info.degree ?? null;
+  slot.transposedMidi = info.transposedMidi ?? midi;
+  if (currentInstrument === 'recorder') {
+    if (info.thumbState !== undefined) slot.thumbState = info.thumbState;
+    if (info.h6r !== undefined) slot.h6r = info.h6r;
+    if (info.h7r !== undefined) slot.h7r = info.h7r;
+  }
+  updateSlotSourceFromVisible(slot);
+  return true;
+}
+function createNoteSlotFromMidi(midi, duration) {
+  const slot = makeBlankNote(duration);
+  if (!setNoteSlotToMidi(slot, midi)) return null;
+  return slot;
+}
+function notePaletteTargetSlot() {
+  const sel = getSelectedSlot();
+  if (sel) return sel;
+  const blankStart = measures.length === 1
+    && !hasTabContent()
+    && measures[0].slots.length === 1
+    && measures[0].slots[0].type === 'space';
+  if (blankStart) {
+    return { slot: measures[0].slots[0], mIdx: 0, sIdx: 0, measure: measures[0] };
+  }
+  return null;
+}
+function notePaletteLabelForMidi(midi) {
+  const info = noteFromMidiForWhistle(midi);
+  if (!info) return null;
+  const label = getNoteName(info.holes || [], info.octave, info);
+  if (!label) return null;
+  const baseName = label.replace(/[,']/g, '');
+  return { label, exact: noteNameForPickerMidi(midi, baseName) };
+}
+function renderNotePalette() {
+  const palette = document.getElementById('note-palette');
+  if (!palette) return;
+  palette.innerHTML = '';
+  const label = document.createElement('div');
+  label.className = 'note-palette-label';
+  label.textContent = 'Notas';
+  palette.appendChild(label);
+  const track = document.createElement('div');
+  track.className = 'note-palette-track';
+  const sel = getSelectedSlot();
+  const activeMidi = sel?.slot?.type === 'note' ? finiteMidiValue(midiFromTabSlot(sel.slot)) : null;
+  playableMidiCandidatesForCurrentInstrument().forEach(midi => {
+    const meta = notePaletteLabelForMidi(midi);
+    if (!meta) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'note-palette-btn' + (activeMidi === midi ? ' active' : '');
+    btn.dataset.midi = midi;
+    btn.title = `Aplicar ${meta.exact}`;
+    const note = document.createElement('span');
+    note.className = 'note-palette-note';
+    note.textContent = meta.label;
+    const oct = document.createElement('span');
+    oct.className = 'note-palette-oct';
+    oct.textContent = meta.exact;
+    btn.appendChild(note);
+    btn.appendChild(oct);
+    btn.onclick = e => {
+      e.stopPropagation();
+      applyNotePaletteMidi(midi);
+    };
+    track.appendChild(btn);
+  });
+  palette.appendChild(track);
+}
+function applyNotePaletteMidi(midi) {
+  if (currentMode !== 'edit') return;
+  closeNotePicker();
+  const sel = notePaletteTargetSlot();
+  if (!sel) {
+    setImportStatus('Selecciona un slot o una nota primero.', 'error');
+    return;
+  }
+  if (sel.slot.type === 'note') {
+    applyMidiToSlot(sel.mIdx, sel.sIdx, midi);
+    return;
+  }
+  const newDur = currentDurationBeats();
+  const slotDur = sel.slot.duration;
+  if (newDur > slotDur + 0.0001) {
+    setImportStatus(
+      `La duración (${durationLabel(newDur)}) excede el espacio disponible (${durationLabel(slotDur)}).`,
+      'error'
+    );
+    return;
+  }
+  if (!noteFromMidiForWhistle(midi)) {
+    setImportStatus('No hay digitación para esa nota en este instrumento.', 'error');
+    return;
+  }
+  pushUndoSnapshot();
+  ensureEditableRecord();
+  const newSlot = createNoteSlotFromMidi(midi, newDur);
+  if (!newSlot) {
+    setImportStatus('No hay digitación para esa nota en este instrumento.', 'error');
+    return;
+  }
+  const remainder = Math.round((slotDur - newDur) * 1000) / 1000;
+  if (remainder > 0.0001) {
+    const fillerRests = splitDurationIntoStandardRests(remainder).map(d => makeRest(d));
+    sel.measure.slots.splice(sel.sIdx, 1, newSlot, ...fillerRests);
+  } else {
+    sel.measure.slots[sel.sIdx] = newSlot;
+  }
+  selectedRef = { mIdx: sel.mIdx, sIdx: sel.sIdx };
+  setImportStatus('');
+  afterMutation();
+}
+function renderNotePicker() {
+  if (!notePickerState) return;
+  const { el, mIdx, sIdx } = notePickerState;
+  const slot = measures[mIdx]?.slots[sIdx];
+  if (!slot) { closeNotePicker(); return; }
+  const noteName = notePickerState.note + notePickerState.accidental;
+  let candidates = pickerCandidatesForState();
+  if (!candidates.includes(notePickerState.selectedMidi)) {
+    notePickerState.selectedMidi = pickNearestMidi(candidates, slot);
+  }
+  const letters = ['C','D','E','F','G','A','B'];
+  const accidentals = [
+    { value:'', label:'nat' },
+    { value:'#', label:'#' },
+    { value:'b', label:'b' }
+  ];
+  const letterButtons = letters.map(letter =>
+    `<button type="button" class="note-picker-btn${letter===notePickerState.note?' active':''}" data-note="${letter}">${letter}</button>`
+  ).join('');
+  const accidentalButtons = accidentals.map(acc =>
+    `<button type="button" class="note-picker-btn${acc.value===notePickerState.accidental?' active':''}" data-acc="${acc.value}">${acc.label}</button>`
+  ).join('');
+  const octaveButtons = candidates.map(midi =>
+    `<button type="button" class="note-picker-btn${midi===notePickerState.selectedMidi?' active':''}" data-midi="${midi}">${noteNameForPickerMidi(midi, noteName)}</button>`
+  ).join('');
+  const status = candidates.length ? '' : `Fuera de rango (${rangeLabelForCurrentInstrument()})`;
+  el.innerHTML = `
+    <div class="note-picker-title">
+      <span>Ingresar nota</span>
+      <button type="button" class="note-picker-close" title="Cerrar">×</button>
+    </div>
+    <div class="note-picker-row">${letterButtons}</div>
+    <div class="note-picker-row">${accidentalButtons}</div>
+    <div class="note-picker-octaves">${octaveButtons}</div>
+    <div class="note-picker-status">${status}</div>
+    <div class="note-picker-actions">
+      <button type="button" class="note-picker-btn" data-cancel="1">Cancelar</button>
+      <button type="button" class="note-picker-btn note-picker-apply" data-apply="1" ${candidates.length?'':'disabled'}>Aplicar</button>
+    </div>`;
+  el.querySelector('.note-picker-close')?.addEventListener('click', closeNotePicker);
+  el.querySelector('[data-cancel]')?.addEventListener('click', closeNotePicker);
+  el.querySelectorAll('[data-note]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      notePickerState.note = btn.dataset.note;
+      notePickerState.selectedMidi = null;
+      renderNotePicker();
+    });
+  });
+  el.querySelectorAll('[data-acc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      notePickerState.accidental = btn.dataset.acc || '';
+      notePickerState.selectedMidi = null;
+      renderNotePicker();
+    });
+  });
+  el.querySelectorAll('[data-midi]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      notePickerState.selectedMidi = Number(btn.dataset.midi);
+      renderNotePicker();
+    });
+  });
+  el.querySelector('[data-apply]')?.addEventListener('click', () => {
+    const midi = notePickerState?.selectedMidi;
+    const target = notePickerState ? { mIdx: notePickerState.mIdx, sIdx: notePickerState.sIdx } : null;
+    if (!Number.isFinite(midi) || !target) return;
+    closeNotePicker();
+    applyMidiToSlot(target.mIdx, target.sIdx, midi);
+  });
+  positionNotePicker(notePickerState.anchorEl);
+}
+function editNoteName(mIdx, sIdx, anchorEl) {
+  const slot = measures[mIdx]?.slots[sIdx];
+  if (!slot || slot.type !== 'note') return;
+  if (currentMode === 'play') { previewTabSlot(slot, mIdx); return; }
+  const currentMidi = finiteMidiValue(midiFromTabSlot(slot));
+  const currentName = getNoteName(slot.holes || [], slot.octave, slot) || '';
+  const parsed = parseNoteText(currentName);
+  const fallbackPitch = pitchFromMidi(currentMidi ?? playableMidiCandidatesForCurrentInstrument()[0]);
+  const note = parsed?.noteName?.[0] || fallbackPitch.step;
+  const accidental = parsed?.noteName?.slice(1) || (fallbackPitch.alter === 1 ? '#' : fallbackPitch.alter === -1 ? 'b' : '');
+  closeNotePicker();
+  const el = document.createElement('div');
+  el.className = 'note-picker';
+  document.body.appendChild(el);
+  const outsideHandler = e => {
+    if (notePickerState?.el?.contains(e.target) || e.target === anchorEl) return;
+    closeNotePicker();
+  };
+  const keyHandler = e => {
+    if (e.key === 'Escape') { e.preventDefault(); closeNotePicker(); }
+    if (e.key === 'Enter') {
+      const midi = notePickerState?.selectedMidi;
+      const target = notePickerState ? { mIdx: notePickerState.mIdx, sIdx: notePickerState.sIdx } : null;
+      if (Number.isFinite(midi) && target) {
+        e.preventDefault();
+        closeNotePicker();
+        applyMidiToSlot(target.mIdx, target.sIdx, midi);
+      }
+    }
+  };
+  notePickerState = {
+    el, mIdx, sIdx, anchorEl,
+    note, accidental,
+    selectedMidi: currentMidi,
+    outsideHandler, keyHandler
+  };
+  document.addEventListener('mousedown', outsideHandler, true);
+  document.addEventListener('keydown', keyHandler, true);
+  renderNotePicker();
 }
 function frequencyFromMidi(midi) { return 440 * Math.pow(2, (midi-69)/12); }
 function midiFromPitch(pitchEl) {
@@ -1681,6 +3687,73 @@ function hashString(text) {
   return (h>>>0).toString(16);
 }
 function cloneData(v) { return JSON.parse(JSON.stringify(v)); }
+function finiteMidiValue(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+function instrumentRootPc(inst=currentInstrument, key=whistleKey) {
+  return inst === 'whistle' ? (KEY_ROOT[key] ?? 2) : 0;
+}
+function sourceMidiFromVisibleMidi(midi, inst=currentInstrument, key=whistleKey) {
+  const n = finiteMidiValue(midi);
+  return n == null ? null : n - instrumentRootPc(inst, key);
+}
+function visibleMidiFromSourceMidi(sourceMidi, inst=currentInstrument, key=whistleKey) {
+  const n = finiteMidiValue(sourceMidi);
+  return n == null ? null : n + instrumentRootPc(inst, key);
+}
+function slotSourceMidiValue(slot, opts={}) {
+  if (!slot || slot.type !== 'note') return null;
+  const inst = opts.instrument || currentInstrument;
+  const key = opts.whistleKey || whistleKey;
+  const fromVisible = midi => sourceMidiFromVisibleMidi(midi, inst, key);
+  if (!opts.preferVisibleSource) {
+    const source = finiteMidiValue(slot.sourceMidi);
+    if (source != null) return source;
+  }
+  if (opts.preferTransposed) {
+    const transposed = finiteMidiValue(slot.transposedMidi);
+    if (transposed != null) return fromVisible(transposed);
+  }
+  if (opts.preferVisibleSource) {
+    const visibleMidi = finiteMidiValue(midiFromTabSlot(slot));
+    if (visibleMidi != null) return fromVisible(visibleMidi);
+    const source = finiteMidiValue(slot.sourceMidi);
+    if (source != null) return source;
+  }
+  const concert = finiteMidiValue(slot.concertMidi);
+  if (concert != null) {
+    return opts.concertMidiIsVisible ? fromVisible(concert) : concert;
+  }
+  const transposed = finiteMidiValue(slot.transposedMidi);
+  if (transposed != null) return fromVisible(transposed);
+  const visibleMidi = finiteMidiValue(midiFromTabSlot(slot));
+  if (visibleMidi != null) return fromVisible(visibleMidi);
+  return null;
+}
+function canonicalizeSlotSourceMidi(slot, opts={}) {
+  const source = slotSourceMidiValue(slot, opts);
+  if (source != null) {
+    slot.sourceMidi = source;
+    slot.concertMidi = source;
+  }
+  return source;
+}
+function updateSlotSourceFromVisible(slot) {
+  const midi = finiteMidiValue(midiFromTabSlot(slot));
+  if (midi == null) return null;
+  const source = sourceMidiFromVisibleMidi(midi);
+  slot.sourceMidi = source;
+  slot.concertMidi = source;
+  slot.transposedMidi = midi;
+  return source;
+}
+function normalizeCanonicalMidi(measuresList, opts={}) {
+  measuresList.forEach(m => m.slots.forEach(slot => {
+    if (slot.type !== 'note') return;
+    canonicalizeSlotSourceMidi(slot, opts);
+  }));
+}
 function xmlEscape(v) {
   return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
     .replaceAll('"','&quot;').replaceAll("'",'&apos;');
@@ -1836,32 +3909,32 @@ function derivePlayback() {
     let beatInMeasure = 0;
     m.slots.forEach(slot => {
       if (slot.type === 'note') {
+        if (currentInstrument === 'recorder') {
+          const degree = recorderDegreeFromSlot(slot);
+          if (degree != null) slot.degree = degree;
+        }
         const midi = midiFromTabSlot(slot);
-        slot.transposedMidi = midi;
+        slot.transposedMidi = midi;  // solo para audio/playback
+        // sourceMidi es el MIDI base en C; evita acumular transposiciones.
+        if (midi != null && Number.isFinite(midi)) {
+          const source = sourceMidiFromVisibleMidi(midi);
+          slot.sourceMidi = source;
+          slot.concertMidi = source;
+        }
         // Mantener degree actualizado (offset relativo 0-11 para retranscripción correcta)
         // Mantener degree: si ya existe (fue calculado por toggleHole/migrateRecorderSlots),
         // conservarlo. Solo recalcular si es null/undefined.
         if (currentInstrument === 'recorder' && (slot.degree === null || slot.degree === undefined)) {
-          const degreeKey = slot.holes?.map(h=>h?'1':'0').join('');
-          if (degreeKey) {
-            const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
-            let foundDeg = null;
-            for (const [off, entry] of Object.entries(table)) {
-              const [s, th6r, th7r] = entry;
-              if (s === degreeKey && th6r === slot.h6r && th7r === slot.h7r) {
-                foundDeg = parseInt(off); break;
-              }
-            }
-            if (foundDeg === null) {
-              for (const [off, entry] of Object.entries(table)) {
-                if (entry[0] === degreeKey) { foundDeg = parseInt(off); break; }
-              }
-            }
-            slot.degree = foundDeg;
+          slot.degree = recorderDegreeFromSlot(slot);
+        } else if (currentInstrument === 'ocarina') {
+          // Para ocarina: degree = offset desde OCARINA_ROOT_MIDI, derivado del MIDI
+          if (midi != null && Number.isFinite(midi)) {
+            const deg = midi - OCARINA_ROOT_MIDI;
+            slot.degree = (deg >= 0 && deg < OCARINA_FINGERINGS.length) ? deg : null;
           }
-        } else if (currentInstrument !== 'recorder') {
+        } else if (currentInstrument === 'whistle') {
           const degreeKey = slot.holes?.map(h=>h?'1':'0').join('');
-          slot.degree = degreeKey ? (getFingeringOffsets(slot.octave)[degreeKey] ?? null) : null;
+          slot.degree = degreeKey ? (FINGERING_OFFSETS[degreeKey] ?? null) : null;
         }
         if (Number.isFinite(midi)) {
           rebuiltEvents.push({ id: slot.eventId, measure: measureNum,
@@ -1918,6 +3991,7 @@ function selectSlot(mIdx, sIdx) {
   } else {
     scheduleScoreRender();
   }
+  renderNotePalette();
 }
 function clearSelection() {
   if (!selectedRef) return;
@@ -1925,6 +3999,7 @@ function clearSelection() {
   document.querySelectorAll('#sheet .tab-note.selected, #sheet .tab-space.selected')
     .forEach(el => el.classList.remove('selected'));
   updateScoreSelection();
+  renderNotePalette();
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1987,7 +4062,7 @@ function addSpace() { placeAtSelectedSlot('space'); }
 function applyDurationToSelected() {
   // Update the visual palette to reflect the new selection
   updateDurationPalette();
-  save();
+  updateSaveControls();
 }
 
 // Toggle a hole on a note slot
@@ -1998,7 +4073,12 @@ function toggleHole(mIdx, sIdx, h, subHole) {
   if (currentMode === 'play') { previewTabSlot(slot); return; }
   pushUndoSnapshot();
   ensureEditableRecord();
-  if (currentInstrument === 'recorder') {
+  if (currentInstrument === 'ocarina') {
+    slot.holes[h] = !slot.holes[h];
+    const _oca_key = slot.holes.map(x=>x?'1':'0').join('');
+    slot.degree = OCARINA_FINGERING_OFFSETS[_oca_key] ?? null;
+    if (slot.degree != null) updateSlotSourceFromVisible(slot);
+  } else if (currentInstrument === 'recorder') {
     if (h === 0) {
       // Pulgar: ciclar open → half → closed → open
       const states = ['open','half','closed'];
@@ -2016,27 +4096,20 @@ function toggleHole(mIdx, sIdx, h, subHole) {
     } else {
       slot.holes[h] = !slot.holes[h];
     }
-    // Recalcular degree buscando en la tabla canónica REC_FING_OCT1/OCT2
-    const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
-    const baseKey = slot.holes.map(x=>x?'1':'0').join('');
-    let foundDeg = null;
-    // Buscar coincidencia exacta primero (baseKey + h6r + h7r)
-    for (const [off, entry] of Object.entries(table)) {
-      const [s, th6r, th7r] = entry;
-      if (s === baseKey && th6r === slot.h6r && th7r === slot.h7r) {
-        foundDeg = parseInt(off); break;
-      }
-    }
-    // Si no hay coincidencia exacta, buscar solo por baseKey
-    // (el usuario puede estar construyendo una digitación parcial)
-    if (foundDeg === null) {
-      for (const [off, entry] of Object.entries(table)) {
-        if (entry[0] === baseKey) { foundDeg = parseInt(off); break; }
-      }
-    }
+    const foundDeg = recorderDegreeFromSlot(slot, { ignoreExplicit: true });
     slot.degree = foundDeg;
+    // Actualizar sourceMidi desde el nuevo degree.
+    if (foundDeg != null) {
+      updateSlotSourceFromVisible(slot);
+    }
   } else {
+    // Whistle: actualizar sourceMidi después de cambiar agujeros
     slot.holes[h] = !slot.holes[h];
+    const _w_key = slot.holes.map(x=>x?'1':'0').join('');
+    const _w_off = FINGERING_OFFSETS[_w_key];
+    if (_w_off != null) {
+      updateSlotSourceFromVisible(slot);
+    }
   }
   afterMutation();
 }
@@ -2049,7 +4122,18 @@ function toggleOctave(mIdx, sIdx) {
   if (currentMode === 'play') { previewTabSlot(slot); return; }
   pushUndoSnapshot();
   ensureEditableRecord();
+  const previousRecorderDegree = currentInstrument === 'recorder' ? recorderDegreeFromSlot(slot) : null;
   slot.octave = !slot.octave;
+  if (currentInstrument === 'recorder' && previousRecorderDegree != null) {
+    slot.degree = previousRecorderDegree;
+    const table = slot.octave ? REC_FING_OCT2 : REC_FING_OCT1;
+    const entry = table[previousRecorderDegree];
+    if (entry) applyRecorderFingering(slot, entry[0], slot.octave);
+  }
+  const midi = midiFromTabSlot(slot);
+  if (midi != null && Number.isFinite(midi)) {
+    updateSlotSourceFromVisible(slot);
+  }
   afterMutation();
 }
 
@@ -2161,27 +4245,41 @@ function clearAll() {
 
 function syncInstrumentUI() {
   const isRec = currentInstrument === 'recorder';
+  const isOca = currentInstrument === 'ocarina';
   const wkGroup = document.getElementById('whistle-key-group');
   const rsGroup = document.getElementById('recorder-style-group');
+  if (isOca) {
+    document.getElementById('whistle-key-group')?.style && (document.getElementById('whistle-key-group').style.display='none');
+    if (rsGroup) rsGroup.style.display='none';
+    return;
+  }
   if (wkGroup) wkGroup.style.display = isRec ? 'none' : '';
   if (rsGroup) rsGroup.style.display = isRec ? '' : 'none';
 }
 // Re-derive hole fingerings from stored MIDI values when switching instruments.
 // Uses degree (relative scale offset 0-11) + octave for consistent cross-instrument transposition.
 function retranscribeForCurrentInstrument() {
+  // ARQUITECTURA LIMPIA:
+  // sourceMidi es el MIDI base en C (nunca cambia entre instrumentos/tonos).
+  // Para cada instrumento se calcula el pitch visible: sourceMidi + raiz.
   measures.forEach(m => {
     m.slots.forEach(slot => {
       if (slot.type !== 'note') return;
-      // Use degree (relative offset) if available — ensures DO→DO across instruments
-      if (slot.degree != null && Number.isFinite(slot.degree)) {
-        const fingering = getOffsetFingerings(slot.octave)[slot.degree];
-        if (fingering) { applyRecorderFingering(slot, fingering, slot.octave); return; }
-      }
-      // Fallback: use transposedMidi (absolute pitch)
-      const midi = slot.transposedMidi;
-      if (midi != null && Number.isFinite(midi)) {
-        const info = noteFromMidiForWhistle(midi);
-        if (info) { slot.holes = info.holes; slot.octave = info.octave; return; }
+      const source = canonicalizeSlotSourceMidi(slot);
+      const targetMidi = visibleMidiFromSourceMidi(source);
+      if (targetMidi == null || !Number.isFinite(targetMidi)) { slot.holes = emptyHoles(); return; }
+      const info = noteFromMidiForWhistle(targetMidi);
+      if (info) {
+        slot.holes   = info.holes;
+        slot.octave  = info.octave  ?? false;
+        slot.degree  = info.degree  ?? null;
+        slot.transposedMidi = info.transposedMidi ?? targetMidi;
+        if (currentInstrument === 'recorder') {
+          if (info.thumbState !== undefined) slot.thumbState = info.thumbState;
+          if (info.h6r        !== undefined) slot.h6r        = info.h6r;
+          if (info.h7r        !== undefined) slot.h7r        = info.h7r;
+        }
+        return;
       }
       slot.holes = emptyHoles();
     });
@@ -2189,6 +4287,7 @@ function retranscribeForCurrentInstrument() {
 }
 function changeInstrument(inst) {
   stopPlayback();
+  closeNotePicker();
   pushUndoSnapshot();
   if (hasTabContent()) ensureEditableRecord();
   currentInstrument = inst;
@@ -2204,9 +4303,11 @@ function changeRecorderStyle(style) {
 }
 function changeKey(k) {
   stopPlayback();
+  closeNotePicker();
   pushUndoSnapshot();
   if (hasTabContent()) ensureEditableRecord();
   whistleKey = k;
+  retranscribeForCurrentInstrument();
   afterMutation();
 }
 
@@ -2231,6 +4332,8 @@ function getHistorySnapshot() {
   return {
     measures: cloneData(measures),
     whistleKey,
+    currentInstrument,
+    recorderStyle,
     playbackEvents: cloneData(playbackEvents),
     measureStartBeats: cloneData(measureStartBeats),
     playbackMaxMeasure,
@@ -2246,14 +4349,27 @@ function restoreHistorySnapshot(snap) {
   stopPlayback();
   historySuspended = true;
   measures = cloneData(snap.measures || [makeEmptyMeasure()]);
-  migrateRecorderSlots(measures);
   whistleKey = snap.whistleKey || 'D';
+  currentInstrument = snap.currentInstrument || 'whistle';
+  recorderStyle = snap.recorderStyle || 'baroque';
+  const instSel = document.getElementById('instrument-select');
+  if (instSel) instSel.value = currentInstrument;
+  const styleSel = document.getElementById('recorder-style-select');
+  if (styleSel) styleSel.value = recorderStyle;
   playbackEvents = cloneData(snap.playbackEvents || []);
   measureStartBeats = cloneData(snap.measureStartBeats || [0]);
   playbackMaxMeasure = Number(snap.playbackMaxMeasure) || 1;
   nextEventId = Number(snap.nextEventId) || getNextEventId();
   selectedRef = snap.selectedRef ? {...snap.selectedRef} : null;
   document.getElementById('key-select').value = whistleKey;
+  syncInstrumentUI();
+  normalizeCanonicalMidi(measures, {
+    preferTransposed: true,
+    concertMidiIsVisible: true,
+    instrument: currentInstrument,
+    whistleKey
+  });
+  retranscribeForCurrentInstrument();
   document.getElementById('time-beats').value = snap.timeBeats || 4;
   document.getElementById('time-beat-type').value = snap.timeBeatType || 4;
   syncTimeSignatureSelect();
@@ -2312,14 +4428,13 @@ function getSongSnapshot() {
     backingOriginalBpm,
     backingEnabled,
     instrumentEnabled,
-    // v4 marker
-    modelVersion: 4
+    modelVersion: TAB_MODEL_VERSION
   };
 }
 function applySongSnapshot(snap) {
   stopPlayback();
   document.getElementById('song-title').value = snap.title || '';
-  if (snap.modelVersion === 4 && Array.isArray(snap.measures)) {
+  if (Array.isArray(snap.measures)) {
     measures = cloneData(snap.measures);
   } else {
     measures = legacyLinesToMeasures(snap);
@@ -2352,7 +4467,15 @@ function applySongSnapshot(snap) {
   backingEnabled     = snap.backingEnabled !== false;
   instrumentEnabled  = snap.instrumentEnabled !== false;
   if (backingGain) backingGain.gain.value = backingVolume;
-  migrateRecorderSlots(measures);
+  const legacyModel = Number(snap.modelVersion || 0) < TAB_MODEL_VERSION;
+  normalizeCanonicalMidi(measures, {
+    preferVisibleSource: legacyModel,
+    preferTransposed: legacyModel,
+    concertMidiIsVisible: legacyModel,
+    instrument: currentInstrument,
+    whistleKey
+  });
+  retranscribeForCurrentInstrument();
   derivePlayback();
   renderAll();
   scheduleScoreRender();
@@ -2381,6 +4504,9 @@ function legacyLinesToMeasures(snap) {
                   thumbState: item.thumbState || (item.holes?.[0] ? 'closed' : 'open'),
                   h6r: item.h6r !== undefined ? item.h6r : (item.holes?.[6] ?? false),
                   h7r: item.h7r !== undefined ? item.h7r : (item.holes?.[7] ?? false),
+                  degree: item.degree ?? null,
+                  sourceMidi: item.sourceMidi ?? null,
+                  concertMidi: item.concertMidi ?? item.sourceMidi ?? null,
           octave: Boolean(item.octave), duration:dur, eventId: item.eventId ?? makeSlotId(),
           transposedMidi: item.transposedMidi };
       }
@@ -2419,9 +4545,11 @@ function blankWorkspace() {
   renderAll();
   scheduleScoreRender();
   updateUndoRedoButtons();
+  markClean();
 }
 function newTablature() {
-  if (hasTabContent() && !confirm('¿Crear una tablatura nueva?')) return;
+  if (!confirmDiscardUnsavedChanges('crear una tablatura nueva')) return;
+  if (!hasUnsavedChanges && hasTabContent() && !confirm('¿Crear una tablatura nueva?')) return;
   blankWorkspace(); closePanels();
   setImportStatus('Nueva tablatura lista.','ok');
 }
@@ -2465,6 +4593,7 @@ function setLibrarySongs(records) {
     .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,LIBRARY_LIMIT);
   localStorage.setItem(LIBRARY_KEY, JSON.stringify(sorted));
   renderLibrarySongs();
+  updateSaveControls();
 }
 function renderLibrarySongs() {
   const list = document.getElementById('library-list');
@@ -2490,6 +4619,87 @@ function renderLibrarySongs() {
     list.appendChild(item);
   });
 }
+function libraryRecordExists(id=currentSongId) {
+  return Boolean(id && getLibrarySongs().some(r => r.id === id));
+}
+function hasSavableContent() {
+  return hasTabContent()
+    || Boolean(document.getElementById('song-title')?.value?.trim())
+    || Boolean(backingBuffer);
+}
+function updateSaveControls() {
+  const saveBtn = document.getElementById('save-btn');
+  const copyBtn = document.getElementById('save-copy-btn');
+  const status = document.getElementById('save-status');
+  const canSave = hasSavableContent();
+  if (saveBtn) saveBtn.disabled = !canSave || !hasUnsavedChanges && libraryRecordExists();
+  if (copyBtn) copyBtn.disabled = !canSave;
+  if (!status) return;
+  status.className = 'save-status';
+  if (!canSave) {
+    status.textContent = '';
+    status.classList.add('clean');
+  } else if (hasUnsavedChanges) {
+    status.textContent = libraryRecordExists() ? 'Cambios sin guardar' : 'Sin guardar';
+    status.classList.add(libraryRecordExists() ? 'dirty' : 'unsaved');
+  } else if (libraryRecordExists()) {
+    status.textContent = 'Guardado';
+    status.classList.add('clean');
+  } else {
+    status.textContent = 'Sin guardar';
+    status.classList.add('unsaved');
+  }
+}
+function markDirty() {
+  hasUnsavedChanges = true;
+  updateSaveControls();
+}
+function markClean() {
+  hasUnsavedChanges = false;
+  updateSaveControls();
+}
+function confirmDiscardUnsavedChanges(actionText='continuar') {
+  if (!hasUnsavedChanges) return true;
+  return confirm(`Hay cambios sin guardar. ¿Descartarlos y ${actionText}?`);
+}
+function copyTitle(title) {
+  const base = (title || 'Sin titulo').replace(/\s+-\s+copia(?:\s+\d+)?$/i, '');
+  return base + ' - copia';
+}
+function persistCurrentSong({ asCopy=false }={}) {
+  if (!hasSavableContent()) {
+    showToast('No hay nada para guardar.', 'error');
+    return;
+  }
+  let snap = getSongSnapshot();
+  let title = snap.title || 'Sin titulo';
+  const records = getLibrarySongs();
+  const exists = libraryRecordExists(currentSongId);
+  let id = currentSongId;
+  let sourceId = currentSourceId || currentSongId;
+  let type = currentSongType || 'edit';
+  if (asCopy || !id || !exists) {
+    sourceId = sourceId || id || `source:${Date.now()}`;
+    id = `${asCopy ? 'copy' : 'song'}:${Date.now()}`;
+    type = asCopy ? 'edit' : type;
+    if (asCopy) {
+      title = copyTitle(title);
+      document.getElementById('song-title').value = title;
+      snap = getSongSnapshot();
+    }
+  }
+  currentSongId = id;
+  currentSourceId = sourceId || id;
+  currentSongType = type;
+  const nextRecords = records.filter(r => r.id !== id);
+  nextRecords.unshift({ id, sourceId: currentSourceId, type, title, updatedAt: Date.now(), snapshot: snap });
+  setLibrarySongs(nextRecords);
+  if (backingBlob) saveBackingBlob(id, backingBlob);
+  markClean();
+  showToast(asCopy ? `Copia guardada: ${title}` : `Guardado: ${title}`, 'ok');
+}
+function saveCurrentSong() { persistCurrentSong({ asCopy:false }); }
+function saveCurrentSongCopy() { persistCurrentSong({ asCopy:true }); }
 // ── IndexedDB for backing track blobs ───────────────────────────────
 const BACKING_DB_NAME = 'tw_backing_v1';
 const BACKING_STORE   = 'blobs';
@@ -2555,28 +4765,13 @@ async function attachBackingBlob(blob, name) {
 }
 
 function upsertCurrentSong() {
-  if (!currentSongId) return;
-  const snap = getSongSnapshot();
-  const title = snap.title || 'Sin titulo';
-  const records = getLibrarySongs().filter(r=>r.id!==currentSongId);
-  records.unshift({ id:currentSongId, sourceId:currentSourceId||currentSongId,
-    type:currentSongType||'edit', title, updatedAt:Date.now(), snapshot:snap });
-  setLibrarySongs(records);
-  // Persist backing blob async
-  if (backingBlob) saveBackingBlob(currentSongId, backingBlob);
+  persistCurrentSong({ asCopy:false });
 }
 function ensureEditableRecord() {
-  if (!currentSongId) { currentSongId=`draft:${Date.now()}`; currentSourceId=currentSongId; currentSongType='edit'; return; }
-  if (currentSongType==='original') {
-    const baseTitle = document.getElementById('song-title').value||'Sin titulo';
-    currentSourceId = currentSourceId||currentSongId;
-    currentSongId = `edit:${currentSourceId}:${Date.now()}`;
-    currentSongType = 'edit';
-    document.getElementById('song-title').value = baseTitle.replace(/\s+-\s+copia(?:\s+\d+)?$/i,'') + ' - copia';
-    showToast('📋 Copia creada — editando tu versión', 'ok');
-  }
+  // Edits stay in memory. The user decides later whether to overwrite or save a copy.
 }
 async function loadLibrarySong(id) {
+  if (!confirmDiscardUnsavedChanges('abrir otra tablatura')) return;
   const record = getLibrarySongs().find(r=>r.id===id);
   if (!record) return;
   currentSongId=record.id; currentSourceId=record.sourceId||record.id; currentSongType=record.type||'edit';
@@ -2584,6 +4779,7 @@ async function loadLibrarySong(id) {
   backingBuffer=null; backingBlob=null; backingBlobName='';
   applySongSnapshot(record.snapshot);
   syncBackingUI();
+  markClean();
   // Try to load backing blob from IndexedDB
   const snap = record.snapshot;
   if (snap.backingBlobName) {
@@ -2652,14 +4848,185 @@ function updateModeUI() {
 }
 function setMode(mode) {
   currentMode = mode==='play'?'play':'edit';
+  closeNotePicker();
   updateModeUI();
   if (currentMode==='edit') stopPlayback();
-  renderAll(); save();
+  renderAll(); updateSaveControls();
 }
 
 // ── Audio ──────────────────────────────────────────────────────────────
+function loadToneJs() {
+  if (window.Tone) return Promise.resolve(window.Tone);
+  if (toneUnavailable) return Promise.reject(new Error('Tone.js no disponible'));
+  if (toneLoadPromise) return toneLoadPromise;
+  function tryCdn(index) {
+    return new Promise((resolve, reject) => {
+      const src = TONE_JS_CDNS[index];
+      if (!src) { reject(new Error('No hay CDN disponible para Tone.js')); return; }
+      let settled = false;
+      const script = document.createElement('script');
+      const timer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        script.remove();
+        tryCdn(index + 1).then(resolve, reject);
+      }, 3500);
+      script.src = src;
+      script.async = true;
+      script.onload = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        window.Tone ? resolve(window.Tone) : tryCdn(index + 1).then(resolve, reject);
+      };
+      script.onerror = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        script.remove();
+        tryCdn(index + 1).then(resolve, reject);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  toneLoadPromise = tryCdn(0).catch(err => {
+    toneUnavailable = true;
+    console.warn('Tone.js fallback:', err);
+    throw err;
+  });
+  return toneLoadPromise;
+}
+function timeoutPromise(ms) {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+}
+function midiToToneNote(midi) {
+  const pitch = pitchFromMidi(midi);
+  const accidental = pitch.alter === 1 ? '#' : pitch.alter === -1 ? 'b' : '';
+  return `${pitch.step}${accidental}${pitch.octave}`;
+}
+function tonePresetForInstrument(inst) {
+  if (inst === 'recorder') {
+    return {
+      volume: -15,
+      oscillator: { type: 'triangle' },
+      envelope: { attack: 0.025, decay: 0.12, sustain: 0.72, release: 0.18 },
+      filterFreq: 2300,
+      filterQ: 0.7,
+      vibratoDepth: 0.035,
+      vibratoFreq: 4.6,
+      wet: 0.08,
+      velocity: 0.72
+    };
+  }
+  if (inst === 'ocarina') {
+    return {
+      volume: -13,
+      oscillator: { type: 'sine' },
+      envelope: { attack: 0.018, decay: 0.10, sustain: 0.82, release: 0.22 },
+      filterFreq: 1900,
+      filterQ: 0.55,
+      vibratoDepth: 0.02,
+      vibratoFreq: 3.8,
+      wet: 0.10,
+      velocity: 0.78
+    };
+  }
+  return {
+    volume: -14,
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.012, decay: 0.08, sustain: 0.70, release: 0.14 },
+    filterFreq: 3600,
+    filterQ: 1.0,
+    vibratoDepth: 0.055,
+    vibratoFreq: 5.7,
+    wet: 0.07,
+    velocity: 0.75
+  };
+}
+function ensureToneEffects(ToneLib) {
+  if (toneEffects) return toneEffects;
+  const reverb = new ToneLib.Reverb({ decay: 1.4, wet: 0.08 }).toDestination();
+  toneEffects = { reverb };
+  return toneEffects;
+}
+function getToneInstrument(inst=currentInstrument) {
+  const ToneLib = window.Tone;
+  if (!ToneLib) return null;
+  if (toneInstruments[inst]) return toneInstruments[inst];
+  const preset = tonePresetForInstrument(inst);
+  try {
+    const synth = new ToneLib.PolySynth(ToneLib.Synth, {
+      oscillator: preset.oscillator,
+      envelope: preset.envelope,
+      volume: preset.volume
+    });
+    const vibrato = new ToneLib.Vibrato({
+      frequency: preset.vibratoFreq,
+      depth: preset.vibratoDepth,
+      wet: 0.5
+    });
+    const filter = new ToneLib.Filter({
+      type: 'lowpass',
+      frequency: preset.filterFreq,
+      Q: preset.filterQ
+    });
+    const effects = ensureToneEffects(ToneLib);
+    synth.chain(vibrato, filter, effects.reverb);
+    toneInstruments[inst] = { synth, vibrato, filter, preset };
+    return toneInstruments[inst];
+  } catch (err) {
+    console.warn('Tone instrument fallback:', err);
+    toneUnavailable = true;
+    return null;
+  }
+}
+async function ensureToneAudioReady(maxWait=900) {
+  if (!instrumentEnabled || toneUnavailable) return null;
+  try {
+    const ToneLib = await Promise.race([loadToneJs(), timeoutPromise(maxWait)]);
+    await ToneLib.start();
+    return getToneInstrument(currentInstrument);
+  } catch (err) {
+    console.warn('Enhanced audio unavailable:', err);
+    return null;
+  }
+}
+function triggerToneNow(instKey, midi, duration) {
+  if (!window.Tone || !instrumentEnabled) return false;
+  const instrument = getToneInstrument(instKey);
+  if (!instrument) return false;
+  const dur = Math.max(0.05, duration || 0.35);
+  instrument.synth.triggerAttackRelease(midiToToneNote(midi), dur, window.Tone.now() + 0.005, instrument.preset.velocity);
+  return true;
+}
+function playToneInstrument(midi, startTime, duration) {
+  if (!window.Tone || toneUnavailable) return false;
+  const instKey = currentInstrument;
+  const delayMs = audioCtx ? Math.max(0, (startTime - audioCtx.currentTime) * 1000) : 0;
+  if (delayMs > 25) {
+    const timer = setTimeout(() => triggerToneNow(instKey, midi, duration), delayMs);
+    playbackTimers.push(timer);
+    return true;
+  }
+  return triggerToneNow(instKey, midi, duration);
+}
+function releaseToneInstruments() {
+  if (!window.Tone) return;
+  Object.values(toneInstruments).forEach(inst => {
+    try { inst.synth.releaseAll(window.Tone.now()); } catch(e) {}
+  });
+}
+function preloadEnhancedAudio() {
+  loadToneJs()
+    .then(ToneLib => {
+      ensureToneEffects(ToneLib);
+      ['whistle', 'recorder', 'ocarina'].forEach(inst => getToneInstrument(inst));
+    })
+    .catch(() => {});
+}
 function playWhistleTone(midi, startTime, duration) {
   if (!audioCtx || !instrumentEnabled) return;
+  if (playToneInstrument(midi, startTime, duration)) return;
   const freq = frequencyFromMidi(midi);
   const gain = audioCtx.createGain();
   const osc = audioCtx.createOscillator();
@@ -2704,6 +5071,7 @@ async function previewTabSlot(slot, mIdx) {
   if (slotEl) slotEl.classList.add('playing');
   audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
   if (audioCtx.state==='suspended') await audioCtx.resume();
+  await ensureToneAudioReady(900);
   playWhistleTone(midi, audioCtx.currentTime+0.01, 0.45);
   setTimeout(() => {
     currentEventId = null;
@@ -2745,6 +5113,7 @@ function pausePlayback() {
   playbackTimers.forEach(id => clearTimeout(id)); playbackTimers = [];
   // Stop oscillators — audio will be silenced
   activeOscillators.forEach(osc => { try { osc.stop(); } catch(e) {} }); activeOscillators = [];
+  releaseToneInstruments();
   // Pause backing: stop the source but remember position
   stopBackingSource();
   // Suspend AudioContext to freeze its clock
@@ -2784,6 +5153,7 @@ async function resumePlayback() {
 function stopPlayback() {
   playbackTimers.forEach(id=>clearTimeout(id)); playbackTimers=[];
   activeOscillators.forEach(osc=>{ try{osc.stop();}catch(e){} }); activeOscillators=[];
+  releaseToneInstruments();
   stopBackingSource();
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   currentEventId=null; currentMeasure=null; isPlaying=false;
@@ -2816,6 +5186,7 @@ async function playSelectedRange() {
   const toMeasure=Math.max(fromMeasure,Math.min(playbackMaxMeasure,Number(toEl?.value)||playbackMaxMeasure));
   playbackTimers.forEach(id=>clearTimeout(id)); playbackTimers=[];
   activeOscillators.forEach(osc=>{ try{osc.stop();}catch(e){} }); activeOscillators=[];
+  releaseToneInstruments();
   stopBackingSource();
   if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
   isPlaying = false;
@@ -2835,6 +5206,7 @@ async function _startPlayback(fromMeasure, toMeasure, skipSec) {
 
   audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
   if (audioCtx.state==='suspended') await audioCtx.resume();
+  await ensureToneAudioReady(1200);
 
   playbackFromMeasure = fromMeasure;
   playbackToMeasure   = toMeasure;
@@ -2965,6 +5337,7 @@ function getPrimaryVoice(xmlMeasures) {
   return '';
 }
 function readMusicXmlFile(file) {
+  if (!confirmDiscardUnsavedChanges('importar el MusicXML')) return;
   const reader=new FileReader();
   reader.onload=()=>importMusicXml(String(reader.result||''),file.name);
   reader.onerror=()=>setImportStatus('No pude leer el archivo.','error');
@@ -2974,8 +5347,9 @@ function importMusicXml(xmlText, fileName='musicxml') {
   stopPlayback();
   const doc=new DOMParser().parseFromString(xmlText,'application/xml');
   if (doc.querySelector('parsererror')) { setImportStatus('MusicXML no válido.','error'); return; }
+  nextEventId = 0;
   const scoreKey=getScoreMajorKey(doc)||'C';
-  const transposeBy=currentInstrument==='recorder' ? (0-(NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0)) : (KEY_ROOT[whistleKey]??2)-(NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0);
+  const scoreRootPc=NOTE_NAMES_FLAT_OR_SHARP[scoreKey]??0;
   let notesImported=0, restsImported=0, skippedChords=0, skippedVoices=0;
   let divisions=1, tempo=100, beatsPerMeasure=4;
   let importedBeats=4, importedBeatType=4;
@@ -2983,7 +5357,6 @@ function importMusicXml(xmlText, fileName='musicxml') {
   const xmlMeasures=firstPart?Array.from(firstPart.children).filter(el=>el.localName==='measure'):[];
   const primaryVoice=getPrimaryVoice(xmlMeasures);
   const importedMeasures=[];
-  let eventId=0;
   xmlMeasures.forEach(xmlM => {
     const newDiv=Number(xmlM.querySelector('attributes divisions')?.textContent);
     if (Number.isFinite(newDiv)&&newDiv>0) divisions=newDiv;
@@ -3009,13 +5382,19 @@ function importMusicXml(xmlText, fileName='musicxml') {
       if (!pitchEl) return;
       const midi=midiFromPitch(pitchEl);
       if (midi==null) return;
-      const noteInfo=noteFromMidiForWhistle(midi+transposeBy);
+      const sourceMidi=midi-scoreRootPc;
+      const targetMidi=visibleMidiFromSourceMidi(sourceMidi);
+      const noteInfo=noteFromMidiForWhistle(targetMidi);
       if (noteInfo) {
-        // degree: offset relativo (0-11) dentro de la escala del instrumento
-        const degree = getFingeringOffsets(noteInfo.octave)[noteInfo.holes.map(h=>h?'1':'0').join('')] ?? null;
         slots.push({ type:'note', holes:noteInfo.holes, octave:noteInfo.octave,
-          duration:durationBeats||1, eventId:eventId++, transposedMidi:noteInfo.transposedMidi,
-          degree: degree });
+          duration:durationBeats||1, eventId:makeSlotId(),
+          transposedMidi:noteInfo.transposedMidi,
+          sourceMidi,
+          concertMidi: sourceMidi,
+          originalMidi: midi,
+          scoreKey,
+          scoreRootPc,
+          degree: noteInfo.degree ?? null });
         notesImported++;
       }
     });
@@ -3026,9 +5405,9 @@ function importMusicXml(xmlText, fileName='musicxml') {
     importedMeasures.push({ id:makeMeasureId(), beats:expected, slots:slots.length?slots:[makeRest(expected)] });
   });
   measures=importedMeasures.length?importedMeasures:[makeEmptyMeasure()];
-  nextEventId=eventId+1;
+  nextEventId=Math.max(nextEventId, getNextEventId());
   currentSourceId=`xml:${hashString(xmlText)}`;
-  currentSongId=currentSourceId; currentSongType='original';
+  currentSongId=null; currentSongType='original';
   undoStack=[]; redoStack=[]; updateUndoRedoButtons();
   document.getElementById('song-title').value=getMusicXmlTitle(doc,fileName);
   document.getElementById('play-bpm').value=Math.round(tempo||100);
@@ -3039,11 +5418,11 @@ function importMusicXml(xmlText, fileName='musicxml') {
   derivePlayback();
   renderAll();
   scheduleScoreRender();
-  save();
+  markDirty();
   const extras=[];
   if (skippedChords) extras.push(`${skippedChords} acordes omitidos.`);
   if (skippedVoices) extras.push(`${skippedVoices} voces ignoradas.`);
-  setImportStatus(`Importado: ${notesImported} notas, ${restsImported} silencios.${extras.length?' '+extras.join(' '):''}`, 'ok');
+  setImportStatus(`Importado sin guardar: ${notesImported} notas, ${restsImported} silencios.${extras.length?' '+extras.join(' '):''}`, 'ok');
 }
 window.importMusicXml = importMusicXml;
 
@@ -3309,25 +5688,24 @@ function importTabJson(event) {
   const file = event.target.files?.[0];
   event.target.value = '';
   if (!file) return;
+  if (!confirmDiscardUnsavedChanges('importar el JSON')) return;
   const reader = new FileReader();
   reader.onload = e => {
     try {
-      const data = JSON.parse(e.target.result);
+      const raw = String(e.target.result || '');
+      const data = JSON.parse(raw);
       if (!data.measures && !data.lines) throw new Error('JSON sin datos de tablatura válidos');
-      // Assign a fresh song ID so it's saved as a new entry, not overwriting anything
-      const newId = 'json:' + Date.now();
-      currentSongId   = newId;
-      currentSourceId = newId;
+      currentSongId   = null;
+      currentSourceId = 'json:' + hashString(raw);
       currentSongType = 'edit';
       // Append (JSON) to title so user can identify it
       if (data.title && !data.title.endsWith('(JSON)')) data.title = data.title + ' (JSON)';
       applySongSnapshot(data);
-      afterMutation();
-      upsertCurrentSong(); // save as new library entry immediately
+      markDirty();
       if (data.backingBlobName) {
-        showToast('✅ Importado. Carga el backing track manualmente: "' + data.backingBlobName + '"', false, 5000);
+        showToast('Importado sin guardar. Carga el backing track manualmente: "' + data.backingBlobName + '"', 'ok');
       } else {
-        showToast('✅ Importado y guardado: ' + (data.title || file.name));
+        showToast('Importado sin guardar: ' + (data.title || file.name), 'ok');
       }
       // Close settings panel if open
       const panel = document.getElementById('settings-panel');
@@ -3367,6 +5745,19 @@ function exportPDF() {
 
 // ── Print ──────────────────────────────────────────────────────────────
 function noteToSVG(slot) {
+  if (currentInstrument==='ocarina') {
+    const h=slot.holes||Array(12).fill(true);
+    const W=80,svgH=112,CL='#111',OP='#fff',ST='#444',SW='0.5';
+    const noteName=getNoteName(h,false,slot);
+    const sx=OCA_SX, sy=OCA_SY;
+    let s=`<svg width="${W}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">`;
+    if(noteName) s+=`<text x="40" y="10" text-anchor="middle" font-size="9" font-weight="bold" font-family="Georgia,serif" fill="#1d4ed8">${noteName}</text>`;
+    s+=`<path fill="#c8c5bc" stroke="${ST}" stroke-width="1" d="M${(159.9*sx).toFixed(1)},${(10.5*sy+2).toFixed(1)}c${(-1.1*sx).toFixed(1)},${(.5*sy).toFixed(1)},${(-2.1*sx).toFixed(1)},${(1*sy).toFixed(1)},${(-3.1*sx).toFixed(1)},${(1.7*sy).toFixed(1)}c${(-4.1*sx).toFixed(1)},${(2.6*sy).toFixed(1)},${(-7.8*sx).toFixed(1)},${(5.9*sy).toFixed(1)},${(-11.7*sx).toFixed(1)},${(9*sy).toFixed(1)}c${(-.9*sx).toFixed(1)},${(.7*sy).toFixed(1)},${(-1.8*sx).toFixed(1)},${(1.4*sy).toFixed(1)},${(-2.7*sx).toFixed(1)},${(2.1*sy).toFixed(1)}c${(-16.1*sx).toFixed(1)},${(12.9*sy).toFixed(1)},${(-32*sx).toFixed(1)},${(25.9*sy).toFixed(1)},${(-47.5*sx).toFixed(1)},${(39*sy).toFixed(1)}c${(-13*sx).toFixed(1)},${(12.7*sy).toFixed(1)},${(-25.4*sx).toFixed(1)},${(25.9*sy).toFixed(1)},${(-36.9*sx).toFixed(1)},${(40.3*sy).toFixed(1)}c${(-20.7*sx).toFixed(1)},${(25.4*sy).toFixed(1)},${(-32.9*sx).toFixed(1)},${(54.5*sy).toFixed(1)},${(-44.4*sx).toFixed(1)},${(84.2*sy).toFixed(1)}c${(-3.9*sx).toFixed(1)},${(10*sy).toFixed(1)},${(.2*sx).toFixed(1)},${(19.6*sy).toFixed(1)},${(8.1*sx).toFixed(1)},${(26.6*sy).toFixed(1)}c${(8*sx).toFixed(1)},${(7.1*sy).toFixed(1)},${(16.9*sx).toFixed(1)},${(10.5*sy).toFixed(1)},${(27.8*sx).toFixed(1)},${(5.2*sy).toFixed(1)}c${(11.7*sx).toFixed(1)},${(-5.7*sy).toFixed(1)},${(24.1*sx).toFixed(1)},${(-10*sy).toFixed(1)},${(35.4*sx).toFixed(1)},${(-16.5*sy).toFixed(1)}c${(18.2*sx).toFixed(1)},${(-10.5*sy).toFixed(1)},${(25.6*sx).toFixed(1)},${(-9.5*sy).toFixed(1)},${(42.4*sx).toFixed(1)},${(3.2*sy).toFixed(1)}c${(6.8*sx).toFixed(1)},${(5.1*sy).toFixed(1)},${(12.5*sx).toFixed(1)},${(12.7*sy).toFixed(1)},${(22.9*sx).toFixed(1)},${(11.8*sy).toFixed(1)}c${(11.6*sx).toFixed(1)},${(-1.1*sy).toFixed(1)},${(18.3*sx).toFixed(1)},${(-9*sy).toFixed(1)},${(12.9*sx).toFixed(1)},${(-19.1*sy).toFixed(1)}c${(-18.8*sx).toFixed(1)},${(-34.7*sy).toFixed(1)},${(-9.2*sx).toFixed(1)},${(-69.4*sy).toFixed(1)},${(-.6*sx).toFixed(1)},${(-103.8*sy).toFixed(1)}c${(6.6*sx).toFixed(1)},${(-26.2*sy).toFixed(1)},${(15.2*sx).toFixed(1)},${(-51.9*sy).toFixed(1)},${(22.9*sx).toFixed(1)},${(-77.9*sy).toFixed(1)}c${(1.1*sx).toFixed(1)},${(-3.6*sy).toFixed(1)},${(1.7*sx).toFixed(1)},${(-7.5*sy).toFixed(1)},${(.6*sx).toFixed(1)},${(-11.2*sy).toFixed(1)}c${(-1.2*sx).toFixed(1)},${(-4.3*sy).toFixed(1)},${(-4.9*sx).toFixed(1)},${(-6.7*sy).toFixed(1)},${(-9.2*sx).toFixed(1)},${(-7.5*sy).toFixed(1)}c${(-3.6*sx).toFixed(1)},${(-.6*sy).toFixed(1)},${(-7.2*sx).toFixed(1)},${(.1*sy).toFixed(1)},${(-10.5*sx).toFixed(1)},${(1.6*sy).toFixed(1)}Z"/>`;
+    OCA_HOLES_SCALED.forEach(([cx,cy,r],i)=>{
+      s+=`<circle cx="${(cx).toFixed(1)}" cy="${(cy+2).toFixed(1)}" r="${r.toFixed(1)}" fill="${h[i]?CL:OP}" stroke="${ST}" stroke-width="${SW}"/>`;
+    });
+    s+='</svg>'; return s;
+  }
   if (currentInstrument==='recorder') {
     const h=slot.holes||Array(8).fill(false);
     const w=46,svgH=144,CL='#111',OP='#fff',ST='#444',SW='1.5';
@@ -3522,6 +5913,81 @@ function buildPrintHTML() {
 }
 
 
+
+// ── Ocarina hole SVG builder ─────────────────────────────────────────
+// Posiciones de los 12 hoyos basadas en el SVG original (viewBox 193.6x245.3)
+// escaladas a un viewBox de 80x110 para el display de tablatura
+const OCARINA_HOLE_POS = [
+  // [cx, cy, r] en coordenadas del SVG original, escaladas
+  // H01=índice MI  cx=67.7  cy=123.5 r=11
+  // H02=anular MI  cx=65.9  cy=148.1 r=10
+  // H03=mayor MI   cx=56.1  cy=177.5 r=11
+  // H04=meñique MI cx=37.1  cy=197.7 r=11
+  // H05=sub-hoyo MI cx=78.6 cy=185.3 r=7
+  // H06=índice MD  cx=122.4 cy=139.4 r=10
+  // H07=mayor MD   cx=122.2 cy=111.4 r=10
+  // H08=anular MD  cx=133.6 cy=83.5  r=10
+  // H09=meñique MD cx=148.1 cy=60.5  r=10
+  // H10=sub-hoyo MD cx=103  cy=107.5 r=7
+  // H11=pulgar MI  cx=101.7 cy=231.1 r=11
+  // H12=pulgar MD  cx=166.5 cy=176.1 r=11
+];
+// Scale factor: original viewBox 193.6x245.3 → display 80x100
+const OCA_SX = 80/193.6, OCA_SY = 100/245.3;
+const OCA_HOLES_SCALED = [
+  [67.7*OCA_SX,  123.5*OCA_SY, 11*OCA_SX],  // H01
+  [65.9*OCA_SX,  148.1*OCA_SY, 10*OCA_SX],  // H02
+  [56.1*OCA_SX,  177.5*OCA_SY, 11*OCA_SX],  // H03
+  [37.1*OCA_SX,  197.7*OCA_SY, 11*OCA_SX],  // H04
+  [78.6*OCA_SX,  185.3*OCA_SY,  7*OCA_SX],  // H05
+  [122.4*OCA_SX, 139.4*OCA_SY, 10*OCA_SX],  // H06
+  [122.2*OCA_SX, 111.4*OCA_SY, 10*OCA_SX],  // H07
+  [133.6*OCA_SX,  83.5*OCA_SY, 10*OCA_SX],  // H08
+  [148.1*OCA_SX,  60.5*OCA_SY, 10*OCA_SX],  // H09
+  [103*OCA_SX,   107.5*OCA_SY,  7*OCA_SX],  // H10
+  [101.7*OCA_SX, 231.1*OCA_SY, 11*OCA_SX],  // H11
+  [166.5*OCA_SX, 176.1*OCA_SY, 11*OCA_SX],  // H12
+];
+
+function buildOcarinaHolesSVG(hArr, mIdx, sIdx, slot) {
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg');
+  const W=80, H=102;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',String(W));
+  svg.setAttribute('height',String(H));
+  svg.style.cssText='display:block;flex-shrink:0;';
+
+  // Cuerpo de la ocarina
+  const body=document.createElementNS(NS,'path');
+  body.setAttribute('fill','#c8c5bc');
+  body.setAttribute('stroke','#5F5E5A');
+  body.setAttribute('stroke-width','1');
+  // Path escalado del SVG original
+  const sx=OCA_SX, sy=OCA_SY;
+  body.setAttribute('d',`M${159.9*sx},${10.5*sy}c${-1.1*sx},${.5*sy},${-2.1*sx},${1*sy},${-3.1*sx},${1.7*sy}c${-4.1*sx},${2.6*sy},${-7.8*sx},${5.9*sy},${-11.7*sx},${9*sy}c${-.9*sx},${.7*sy},${-1.8*sx},${1.4*sy},${-2.7*sx},${2.1*sy}c${-1.6*sx},${1.3*sy},${-3.2*sx},${2.6*sy},${-4.8*sx},${3.9*sy}c${-3.7*sx},${3*sy},${-7.4*sx},${6.1*sy},${-11*sx},${9.2*sy}c${-3.6*sx},${3.1*sy},${-7.2*sx},${6.3*sy},${-10.7*sx},${9.5*sy}s${-7*sx},${6.5*sy},${-10.5*sx},${9.8*sy},${-6.9*sx},${6.6*sy},${-10.3*sx},${10*sy},${-6.7*sx},${6.8*sy},${-10*sx},${10.3*sy},${-6.6*sx},${7*sy},${-9.8*sx},${10.5*sy},${-6.4*sx},${7.1*sy},${-9.6*sx},${10.8*sy}c${-3.2*sx},${3.6*sy},${-6.3*sx},${7.3*sy},${-9.4*sx},${11*sy}s${-3.2*sx},${3.8*sy},${-4.7*sx},${5.8*sy}c${-20.7*sx},${25.4*sy},${-32.9*sx},${54.5*sy},${-44.4*sx},${84.2*sy}c${-3.9*sx},${10*sy},${.2*sx},${19.6*sy},${8.1*sx},${26.6*sy}c${8*sx},${7.1*sy},${16.9*sx},${10.5*sy},${27.8*sx},${5.2*sy}c${11.7*sx},${-5.7*sy},${24.1*sx},${-10*sy},${35.4*sx},${-16.5*sy}c${18.2*sx},${-10.5*sy},${25.6*sx},${-9.5*sy},${42.4*sx},${3.2*sy}c${6.8*sx},${5.1*sy},${12.5*sx},${12.7*sy},${22.9*sx},${11.8*sy}c${11.6*sx},${-1.1*sy},${18.3*sx},${-9*sy},${12.9*sx},${-19.1*sy}c${-18.8*sx},${-34.7*sy},${-9.2*sx},${-69.4*sy},${-.6*sx},${-103.8*sy}c${6.6*sx},${-26.2*sy},${15.2*sx},${-51.9*sy},${22.9*sx},${-77.9*sy}c${1.1*sx},${-3.6*sy},${1.7*sx},${-7.5*sy},${.6*sx},${-11.2*sy}c${-1.2*sx},${-4.3*sy},${-4.9*sx},${-6.7*sy},${-9.2*sx},${-7.5*sy}c${-3.6*sx},${-.6*sy},${-7.2*sx},${.1*sy},${-10.5*sx},${1.6*sy}Z`);
+  svg.appendChild(body);
+
+  // Hoyos
+  OCA_HOLES_SCALED.forEach(([cx,cy,r], i) => {
+    const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',cx.toFixed(1));
+    c.setAttribute('cy',cy.toFixed(1));
+    c.setAttribute('r',r.toFixed(1));
+    c.setAttribute('fill', hArr[i] ? '#111' : '#fff');
+    c.setAttribute('stroke','#444');
+    c.setAttribute('stroke-width','0.5');
+    c.style.cursor='pointer';
+    c.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(currentMode==='play') previewTabSlot(slot,mIdx);
+      else toggleHole(mIdx,sIdx,i);
+    });
+    svg.appendChild(c);
+  });
+  return svg;
+}
+
 // ── Recorder hole SVG builder ───────────────────────────────────────
 function buildRecorderHolesSVG(hArr, mIdx, sIdx, slot) {
   const NS='http://www.w3.org/2000/svg';
@@ -3585,10 +6051,13 @@ function buildRecorderHolesSVG(hArr, mIdx, sIdx, slot) {
 // ── Render ─────────────────────────────────────────────────────────────
 function renderAll() {
   const sheet=document.getElementById('sheet');
+  renderNotePalette();
   sheet.innerHTML='';
   sheet.onclick=e=>{ if(e.target===sheet&&currentMode==='edit') clearSelection(); };
 
-  if (!measures.length||!hasTabContent()&&measures.length===1&&measures[0].slots.every(s=>s.type==='space')) {
+  const isEmptySheet = !measures.length||!hasTabContent()&&measures.length===1&&measures[0].slots.every(s=>s.type==='space');
+  sheet.classList.toggle('is-empty', isEmptySheet);
+  if (isEmptySheet) {
     sheet.innerHTML='<div class="empty-msg">Agrega un compás o importa un MusicXML para empezar</div>';
     // Still render the single empty measure
     if (!measures.length) return;
@@ -3755,10 +6224,17 @@ function renderAll() {
           noteEl.appendChild(del);
           const noteName=getNoteName(slot.holes,slot.octave,slot);
           const nameEl=document.createElement('div');
-          nameEl.className='note-name'+(noteName?'':' unknown');
+          nameEl.className='note-name editable'+(noteName?'':' unknown');
           nameEl.textContent=noteName||'·';
+          nameEl.title='Clic para ingresar nota';
+          nameEl.onclick=e=>{
+            e.stopPropagation();
+            editNoteName(mIdx, sIdx, nameEl);
+          };
           noteEl.appendChild(nameEl);
-          if (currentInstrument==='recorder') {
+          if (currentInstrument==='ocarina') {
+            noteEl.appendChild(buildOcarinaHolesSVG(slot.holes||Array(12).fill(true), mIdx, sIdx, slot));
+          } else if (currentInstrument==='recorder') {
             noteEl.appendChild(buildRecorderHolesSVG(slot.holes||Array(8).fill(false), mIdx, sIdx, slot));
           } else {
             const grid=document.createElement('div');
@@ -3776,15 +6252,17 @@ function renderAll() {
             });
             noteEl.appendChild(grid);
           }
-          const oct=document.createElement('div');
-          oct.className='octave-btn'+(slot.octave?' on':'');
-          oct.textContent='+'; oct.title='Segunda octava';
-          oct.onclick=e=>{
-            e.stopPropagation();
-            if (currentMode==='play') previewTabSlot(slot, mIdx);
-            else toggleOctave(mIdx,sIdx);
-          };
-          noteEl.appendChild(oct);
+          if (currentInstrument === 'whistle') {
+            const oct=document.createElement('div');
+            oct.className='octave-btn'+(slot.octave?' on':'');
+            oct.textContent='+'; oct.title='Segunda octava';
+            oct.onclick=e=>{
+              e.stopPropagation();
+              if (currentMode==='play') previewTabSlot(slot, mIdx);
+              else toggleOctave(mIdx,sIdx);
+            };
+            noteEl.appendChild(oct);
+          }
           measureEl.appendChild(noteEl);
         }
       });
@@ -3865,10 +6343,8 @@ async function loadBackingTrack(event) {
     const nameEl = document.getElementById('backingFileName');
     if (nameEl) { nameEl.textContent = file.name; nameEl.dataset.name = file.name; }
     syncBackingUI();
-    // Ensure we have a song ID to attach the blob to
-    if (!currentSongId) { currentSongId=`draft:${Date.now()}`; currentSourceId=currentSongId; currentSongType='edit'; }
-    save(); // saves snapshot with backingBlobName + persists blob via upsertCurrentSong
-    showToast('🎵 Backing cargado y guardado', 'ok');
+    save();
+    showToast('Backing cargado. Presiona Guardar para conservarlo.', 'ok');
   } catch(e) {
     showToast('No se pudo decodificar el audio: ' + e.message, 'error');
   }
@@ -3880,6 +6356,7 @@ function clearBackingTrack() {
   backingBuffer = null; backingBlob = null; backingEnabled = true;
   backingOffsetSec = 0; backingOriginalBpm = 0;
   syncBackingUI();
+  save();
   showToast('Backing eliminado.');
 }
 
@@ -3931,6 +6408,7 @@ function markBackingEntry() {
   const elapsed = ctx.currentTime - previewStartedAt;
   backingOffsetSec = Math.round((previewFromSec + elapsed) * 100) / 100;
   syncBackingUI();
+  save();
   showToast('🎯 Entrada marcada en ' + backingOffsetSec.toFixed(2) + 's', 'ok');
 }
 
@@ -3989,11 +6467,13 @@ function setBackingVolume(val) {
   backingVolume = parseFloat(val);
   if (backingGain) backingGain.gain.value = backingVolume;
   syncBackingUI();
+  save();
 }
 
 function setBackingOffset(val) {
   backingOffsetSec = Math.max(0, parseFloat(val) || 0);
   syncBackingUI();
+  save();
 }
 
 function backingBpmMismatch() {
@@ -4052,8 +6532,8 @@ function syncBackingUI() {
   const offEl = document.getElementById('backingOffset');
   if (offEl) offEl.value = backingOffsetSec.toFixed(2);
 }
-function save() { try { upsertCurrentSong(); } catch(e) {} }
-function load() { updateModeUI(); syncSettingsUI(); renderLibrarySongs(); blankWorkspace(); syncBackingUI(); syncInstrumentUI(); }
+function save() { markDirty(); }
+function load() { updateModeUI(); syncSettingsUI(); renderLibrarySongs(); blankWorkspace(); syncBackingUI(); syncInstrumentUI(); updateSaveControls(); }
 
 document.getElementById('song-title').addEventListener('input', () => { save(); });
 document.getElementById('play-from').addEventListener('input', () => { clampPlayRange(); save(); });
@@ -4083,6 +6563,19 @@ window.addEventListener('resize', () => { invalidateRowCache(); renderAll(); });
 updateModeUI();
 load();
 loadVerovio();
+
+// ── Hard reset: borra todo el storage y recarga ──────────────────────
+function hardReset() {
+  if (!confirm('¿Borrar todos los datos guardados y empezar desde cero?')) return;
+  try { localStorage.clear(); } catch(e) {}
+  try { sessionStorage.clear(); } catch(e) {}
+  location.reload();
+}
+
+// ── Dev mode: arrancar siempre limpio (sin cargar library) ───────────
+// Descomenta la siguiente línea para desarrollo:
+// localStorage.removeItem(LIBRARY_KEY);
+
 </script>
 </body>
 </html>
